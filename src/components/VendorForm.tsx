@@ -48,7 +48,7 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would make an API call to create a vendor
+      // Since VendorFormValues now matches Omit<Vendor, "id">, we can pass values directly
       onSubmit(values);
       toast.success("Vendor created successfully");
     } catch (error) {
