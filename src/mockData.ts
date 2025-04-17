@@ -8,14 +8,27 @@ export const mockUsers: User[] = [
   { id: "3", name: "Mike Johnson", email: "mike@qumecs.com", role: "Finance" },
 ];
 
-// Mock Vendors
-export const mockVendors: Vendor[] = [
+// Mock Vendors - Now as a function to allow adding new vendors
+let vendorsList: Vendor[] = [
   { id: "v1", name: "Tech Supplies Ltd.", email: "info@techsupplies.com", phone: "123-456-7890", address: "123 Tech St, City" },
   { id: "v2", name: "Office Solutions Inc.", email: "sales@officesolutions.com", phone: "234-567-8901", address: "456 Office Ave, Town" },
   { id: "v3", name: "Global Services Co.", email: "contact@globalservices.com", phone: "345-678-9012", address: "789 Global Rd, County" },
   { id: "v4", name: "Hardware Depot", email: "support@hardwaredepot.com", phone: "456-789-0123", address: "101 Hardware Blvd, State" },
   { id: "v5", name: "Software Systems", email: "info@softwaresystems.com", phone: "567-890-1234", address: "202 Software Ln, Country" },
 ];
+
+// Functions to manipulate vendor data
+export const mockVendors = vendorsList;
+
+export const addVendor = (vendor: Omit<Vendor, "id">): Vendor => {
+  const newVendor: Vendor = {
+    ...vendor,
+    id: `v${vendorsList.length + 1}`,
+  };
+  
+  vendorsList.push(newVendor);
+  return newVendor;
+};
 
 // Mock LPOs
 export const mockLpos: Lpo[] = [

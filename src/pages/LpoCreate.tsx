@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
+import { VendorForm } from "@/components/VendorForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,10 +40,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, Check } from "lucide-react";
-import { mockVendors } from "@/mockData";
-import { LpoItem } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Plus, Trash2, Check, UserPlus } from "lucide-react";
+import { mockVendors, addVendor } from "@/mockData";
+import { LpoItem, Vendor } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { toast } from "sonner";
 
 const LpoCreate = () => {
   const { user, logout } = useAuth();
@@ -60,7 +70,11 @@ const LpoCreate = () => {
   
   // Dialog state
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showNewVendorDialog, setShowNewVendorDialog] = useState(false);
   const [lpoStatus, setLpoStatus] = useState<string>("Pending");
+  
+  // Vendor state
+  const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
   
   // Step state
   const [step, setStep] = useState<number>(1);
@@ -68,7 +82,7 @@ const LpoCreate = () => {
   // Handle vendor selection
   const handleVendorChange = (value: string) => {
     setSelectedVendor(value);
-    const vendor = mockVendors.find((v) => v.id === value);
+    const vendor = vendors.find((v) => v.id === value);
     if (vendor) {
       setVendorName(vendor.name);
     }
@@ -110,6 +124,23 @@ const LpoCreate = () => {
   // Calculate total LPO amount
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.totalPrice, 0);
+  };
+  
+  // Handle creating new vendor
+  const handleCreateVendor = (vendorData: Omit<Vendor, "id">) => {
+    // In a real application, this would make an API call
+    const newVendor = addVendor(vendorData);
+    setVendors([...vendors, newVendor]);
+    
+    // Automatically select the new vendor
+    setSelectedVendor(newVendor.id);
+    setVendorName(newVendor.name);
+    
+    // Close the dialog
+    setShowNewVendorDialog(false);
+    
+    // Show toast notification
+    toast.success(`Vendor "${newVendor.name}" added successfully`);
   };
   
   // Submit LPO
@@ -178,18 +209,29 @@ const LpoCreate = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Select Vendor</CardTitle>
-                <CardDescription>Choose a vendor from the list</CardDescription>
+                <CardDescription>Choose a vendor from the list or create a new one</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="vendor">Vendor</Label>
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="vendor">Vendor</Label>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex items-center gap-1"
+                        onClick={() => setShowNewVendorDialog(true)}
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        <span>Add Vendor</span>
+                      </Button>
+                    </div>
                     <Select value={selectedVendor} onValueChange={handleVendorChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a vendor" />
                       </SelectTrigger>
                       <SelectContent>
-                        {mockVendors.map((vendor) => (
+                        {vendors.map((vendor) => (
                           <SelectItem key={vendor.id} value={vendor.id}>
                             {vendor.name}
                           </SelectItem>
@@ -201,7 +243,7 @@ const LpoCreate = () => {
                   {selectedVendor && (
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <h3 className="font-medium mb-2">Vendor Details</h3>
-                      {mockVendors
+                      {vendors
                         .filter((vendor) => vendor.id === selectedVendor)
                         .map((vendor) => (
                           <div key={vendor.id} className="space-y-1 text-sm">
@@ -431,6 +473,7 @@ const LpoCreate = () => {
         </div>
       </main>
 
+      {/* Success Dialog */}
       <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -467,6 +510,24 @@ const LpoCreate = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Vendor Dialog */}
+      <Dialog open={showNewVendorDialog} onOpenChange={setShowNewVendorDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Vendor</DialogTitle>
+            <DialogDescription>
+              Enter the details for the new vendor below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <VendorForm 
+              onSubmit={handleCreateVendor}
+              onCancel={() => setShowNewVendorDialog(false)} 
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
