@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -42,6 +41,7 @@ import {
 import { Plus, Trash2, Check } from "lucide-react";
 import { mockVendors } from "@/mockData";
 import { LpoItem } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 const LpoCreate = () => {
   const { user, logout } = useAuth();
@@ -265,7 +265,7 @@ const LpoCreate = () => {
                 
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-medium">
-                    Total for this item: ${calculateItemTotal().toFixed(2)}
+                    Total for this item: {formatCurrency(calculateItemTotal())}
                   </div>
                   <Button
                     size="sm"
@@ -294,8 +294,8 @@ const LpoCreate = () => {
                           <TableRow key={item.id}>
                             <TableCell>{item.description}</TableCell>
                             <TableCell className="text-right">{item.quantity}</TableCell>
-                            <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">${item.totalPrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(item.totalPrice)}</TableCell>
                             <TableCell>
                               <Button
                                 variant="ghost"
@@ -312,7 +312,7 @@ const LpoCreate = () => {
                             Total
                           </TableCell>
                           <TableCell className="text-right font-bold">
-                            ${calculateTotal().toFixed(2)}
+                            {formatCurrency(calculateTotal())}
                           </TableCell>
                           <TableCell></TableCell>
                         </TableRow>
@@ -365,7 +365,7 @@ const LpoCreate = () => {
                         <span className="font-medium">Total Items:</span> {items.length}
                       </p>
                       <p>
-                        <span className="font-medium">Total Amount:</span> ${calculateTotal().toFixed(2)}
+                        <span className="font-medium">Total Amount:</span> {formatCurrency(calculateTotal())}
                       </p>
                       <p>
                         <span className="font-medium">Date Created:</span> {new Date().toLocaleDateString()}
@@ -393,8 +393,8 @@ const LpoCreate = () => {
                         <TableRow key={item.id}>
                           <TableCell>{item.description}</TableCell>
                           <TableCell className="text-right">{item.quantity}</TableCell>
-                          <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">${item.totalPrice.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
+                          <TableCell className="text-right">{formatCurrency(item.totalPrice)}</TableCell>
                         </TableRow>
                       ))}
                       <TableRow>
@@ -402,7 +402,7 @@ const LpoCreate = () => {
                           Total
                         </TableCell>
                         <TableCell className="text-right font-bold">
-                          ${calculateTotal().toFixed(2)}
+                          {formatCurrency(calculateTotal())}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -454,7 +454,7 @@ const LpoCreate = () => {
                       ? "text-red-600" 
                       : "text-amber-600"
                   }`}>{lpoStatus}</span></p>
-                  <p><span className="font-medium">Total Amount:</span> ${calculateTotal().toFixed(2)}</p>
+                  <p><span className="font-medium">Total Amount:</span> {formatCurrency(calculateTotal())}</p>
                   <p><span className="font-medium">Items:</span> {items.length}</p>
                 </div>
               </div>

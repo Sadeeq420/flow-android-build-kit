@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { formatCurrency } from "@/lib/utils";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,7 +42,6 @@ import {
 import { mockDashboardData, mockLpos } from "@/mockData";
 import { Mail, MessageSquare } from "lucide-react";
 
-// Colors for charts
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 const STATUS_COLORS = {
   Pending: "#FFBB28",
@@ -61,20 +60,17 @@ const Dashboard = () => {
     message: "Please find attached the latest procurement dashboard report.",
   });
 
-  // Data transformation for LPO Status chart
   const lpoStatusData = [
     { name: "Pending", value: mockDashboardData.lpoStatusSummary.pending },
     { name: "Approved", value: mockDashboardData.lpoStatusSummary.approved },
     { name: "Rejected", value: mockDashboardData.lpoStatusSummary.rejected },
   ];
 
-  // Handler for sending email
   const handleSendEmail = () => {
-    // In a real app, this would send an email
     setEmailDialogOpen(false);
     alert("Email sent successfully!");
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header user={user} onLogout={logout} />
@@ -200,8 +196,12 @@ const Dashboard = () => {
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                    <YAxis 
+                      tickFormatter={(value) => formatCurrency(value)} 
+                    />
+                    <Tooltip 
+                      formatter={(value) => [formatCurrency(value), 'Amount']} 
+                    />
                     <Bar dataKey="amount" fill="#8884d8" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -222,7 +222,7 @@ const Dashboard = () => {
                       <div className={`w-2 h-2 rounded-full mr-2`} style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                       <span className="text-sm font-medium truncate max-w-[150px]">{vendor.vendorName}</span>
                     </div>
-                    <span className="text-sm">${vendor.totalSpend.toLocaleString()}</span>
+                    <span className="text-sm">{formatCurrency(vendor.totalSpend)}</span>
                   </div>
                 ))}
               </div>
@@ -260,7 +260,7 @@ const Dashboard = () => {
                         <TableCell className="font-medium">{lpo.id}</TableCell>
                         <TableCell>{lpo.vendorName}</TableCell>
                         <TableCell>{lpo.dateCreated}</TableCell>
-                        <TableCell>${lpo.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>{formatCurrency(lpo.totalAmount)}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             lpo.status === "Approved" 
