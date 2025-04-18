@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Check, UserPlus } from "lucide-react";
 import { mockVendors, addVendor } from "@/mockData";
-import { LpoItem, Vendor } from "@/types";
+import { LpoItem, Vendor, PaymentStatus } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -56,7 +56,6 @@ const LpoCreate = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   
-  // Form state
   const [selectedVendor, setSelectedVendor] = useState("");
   const [vendorName, setVendorName] = useState("");
   const [items, setItems] = useState<LpoItem[]>([]);
@@ -67,22 +66,17 @@ const LpoCreate = () => {
     totalPrice: 0,
   });
   
-  // Dialog state
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showNewVendorDialog, setShowNewVendorDialog] = useState(false);
   const [lpoStatus, setLpoStatus] = useState<string>("Pending");
   
-  // Vendor state
   const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
   
-  // Step state
   const [step, setStep] = useState<number>(1);
   
-  // Payment state
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("Unpaid");
   const [paidAmount, setPaidAmount] = useState(0);
   
-  // Handle vendor selection
   const handleVendorChange = (value: string) => {
     setSelectedVendor(value);
     const vendor = vendors.find((v) => v.id === value);
@@ -91,12 +85,10 @@ const LpoCreate = () => {
     }
   };
   
-  // Calculate total price for current item
   const calculateItemTotal = () => {
     return (currentItem.quantity || 0) * (currentItem.unitPrice || 0);
   };
   
-  // Add item to list
   const addItem = () => {
     if (!currentItem.description || !currentItem.quantity || !currentItem.unitPrice) {
       return;
@@ -119,62 +111,48 @@ const LpoCreate = () => {
     });
   };
   
-  // Remove item from list
   const removeItem = (id: string) => {
     setItems(items.filter((item) => item.id !== id));
   };
   
-  // Calculate total LPO amount
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.totalPrice, 0);
   };
   
-  // Handle creating new vendor
   const handleCreateVendor = (vendorData: Omit<Vendor, "id">) => {
-    // In a real application, this would make an API call
     const newVendor = addVendor(vendorData);
     setVendors([...vendors, newVendor]);
     
-    // Automatically select the new vendor
     setSelectedVendor(newVendor.id);
     setVendorName(newVendor.name);
     
-    // Close the dialog
     setShowNewVendorDialog(false);
     
-    // Show toast notification
     toast.success(`Vendor "${newVendor.name}" added successfully`);
   };
   
-  // Submit LPO
   const handleSubmit = () => {
-    // In a real app, this would send data to a backend
-    // For demo, we're just showing a success dialog
     setShowSuccessDialog(true);
     
-    // Randomly assign a status for demo purposes
     const statuses = ["Pending", "Approved", "Rejected"];
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
     setLpoStatus(randomStatus);
   };
   
-  // Go to next step
   const nextStep = () => {
     if (step === 1 && !selectedVendor) {
-      return; // Don't proceed without a vendor
+      return;
     }
     if (step === 2 && items.length === 0) {
-      return; // Don't proceed without items
+      return;
     }
     setStep(step + 1);
   };
   
-  // Go to previous step
   const prevStep = () => {
     setStep(step - 1);
   };
   
-  // Finish process
   const finishProcess = () => {
     setShowSuccessDialog(false);
     navigate("/");
@@ -510,7 +488,6 @@ const LpoCreate = () => {
         </div>
       </main>
 
-      {/* Success Dialog */}
       <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -548,7 +525,6 @@ const LpoCreate = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* New Vendor Dialog */}
       <Dialog open={showNewVendorDialog} onOpenChange={setShowNewVendorDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

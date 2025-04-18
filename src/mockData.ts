@@ -1,3 +1,4 @@
+
 import { User, Vendor, Lpo, Report, Reminder, DashboardData } from "./types";
 
 // Mock Users
@@ -76,6 +77,9 @@ export const mockLpos: Lpo[] = [
       { id: "i5", description: "Consulting Services", quantity: 1, unitPrice: 5000, totalPrice: 5000 }
     ],
     totalAmount: 5000,
+    paidAmount: 0,
+    paymentStatus: "Unpaid",
+    payments: [],
     createdBy: "2"
   },
   {
@@ -89,6 +93,9 @@ export const mockLpos: Lpo[] = [
       { id: "i7", description: "Routers", quantity: 2, unitPrice: 300, totalPrice: 600 }
     ],
     totalAmount: 2100,
+    paidAmount: 0,
+    paymentStatus: "Unpaid",
+    payments: [],
     createdBy: "3"
   }
 ];
