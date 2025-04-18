@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { vendorService } from "@/services/vendorService";
 import { Vendor } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,12 +48,15 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
     setIsSubmitting(true);
     
     try {
-      onSubmit({
+      const vendor = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         address: values.address,
-      });
+      };
+      
+      const createdVendor = await vendorService.createVendor(vendor);
+      onSubmit(createdVendor);
       toast.success("Vendor created successfully");
     } catch (error) {
       console.error("Error creating vendor:", error);
