@@ -1,4 +1,3 @@
-
 import { User, Vendor, Lpo, Report, Reminder, DashboardData } from "./types";
 
 // Mock Users
@@ -6,6 +5,7 @@ export const mockUsers: User[] = [
   { id: "1", name: "John Doe", email: "john@qumecs.com", role: "Manager" },
   { id: "2", name: "Jane Smith", email: "jane@qumecs.com", role: "Procurement Officer" },
   { id: "3", name: "Mike Johnson", email: "mike@qumecs.com", role: "Finance" },
+  { id: "4", name: "Sadiq", email: "sadiq@qumecs.com", role: "User" }
 ];
 
 // Mock Vendors - Now as a function to allow adding new vendors
@@ -147,8 +147,10 @@ export const mockDashboardData: DashboardData = {
 
 // Function to simulate authentication
 export const authenticateUser = (email: string, password: string): User | null => {
-  // In a real app, this would validate against a database and properly hash passwords
-  if (email === "jane@qumecs.com" && password === "password123") {
+  if (
+    (email === "jane@qumecs.com" && password === "password123") ||
+    (email === "sadiq@qumecs.com" && password === "Sadiq123")
+  ) {
     return mockUsers.find(user => user.email === email) || null;
   }
   return null;
