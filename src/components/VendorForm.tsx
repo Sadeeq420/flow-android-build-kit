@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Vendor } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -48,8 +47,12 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
     setIsSubmitting(true);
     
     try {
-      // Since VendorFormValues now matches Omit<Vendor, "id">, we can pass values directly
-      onSubmit(values);
+      onSubmit({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+      });
       toast.success("Vendor created successfully");
     } catch (error) {
       console.error("Error creating vendor:", error);
