@@ -28,7 +28,7 @@ const Login = () => {
       if (success) {
         navigate('/');
       } else {
-        setError('Invalid email or password. Try using jane@qumecs.com with password123');
+        setError('Invalid email or password. Try using jane@qumecs.com with password123 or sadiq@qumecs.com with Sadiq123');
       }
     } catch (err) {
       setError('An error occurred while logging in. Please try again.');
@@ -98,6 +98,9 @@ const Login = () => {
           <p>Demo credentials:</p>
           <p>Email: jane@qumecs.com</p>
           <p>Password: password123</p>
+          <p>OR</p>
+          <p>Email: sadiq@qumecs.com</p>
+          <p>Password: Sadiq123</p>
         </div>
       </div>
     </div>
