@@ -1,4 +1,3 @@
-
 import { User, Vendor, Lpo, Report, Reminder, DashboardData } from "./types";
 
 // Mock Users
@@ -30,7 +29,7 @@ export const addVendor = (vendor: Omit<Vendor, "id">): Vendor => {
   return newVendor;
 };
 
-// Mock LPOs
+// Mock LPOs with payment information
 export const mockLpos: Lpo[] = [
   {
     id: "lpo1",
@@ -43,6 +42,12 @@ export const mockLpos: Lpo[] = [
       { id: "i2", description: "Monitors", quantity: 10, unitPrice: 250, totalPrice: 2500 }
     ],
     totalAmount: 8500,
+    paidAmount: 6375,
+    paymentStatus: "Partially Paid",
+    payments: [
+      { id: "p1", amount: 4250, date: "2024-04-15", reference: "PAY001" },
+      { id: "p2", amount: 2125, date: "2024-04-20", reference: "PAY002" }
+    ],
     createdBy: "2"
   },
   {
@@ -56,6 +61,9 @@ export const mockLpos: Lpo[] = [
       { id: "i4", description: "Filing Cabinets", quantity: 5, unitPrice: 200, totalPrice: 1000 }
     ],
     totalAmount: 4000,
+    paidAmount: 0,
+    paymentStatus: "Unpaid",
+    payments: [],
     createdBy: "1"
   },
   {
@@ -99,12 +107,19 @@ export const mockReminders: Reminder[] = [
   { id: "rem3", title: "Inventory Check", date: "2024-05-01", time: "10:00" }
 ];
 
-// Mock Dashboard Data
+// Updated Dashboard Data with payment information
 export const mockDashboardData: DashboardData = {
   lpoStatusSummary: {
     pending: 2,
     approved: 1,
     rejected: 1
+  },
+  paymentSummary: {
+    paid: 1,
+    unpaid: 2,
+    partial: 1,
+    totalAmount: 19600,
+    paidAmount: 8475
   },
   monthlySpend: [
     { month: "Jan", amount: 12500 },

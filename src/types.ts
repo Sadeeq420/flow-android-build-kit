@@ -18,12 +18,21 @@ export type Vendor = {
 
 export type LpoStatus = 'Pending' | 'Approved' | 'Rejected';
 
+export type PaymentStatus = 'Unpaid' | 'Partially Paid' | 'Fully Paid';
+
 export type LpoItem = {
   id: string;
   description: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+};
+
+export type LpoPayment = {
+  id: string;
+  amount: number;
+  date: string;
+  reference: string;
 };
 
 export type Lpo = {
@@ -34,6 +43,9 @@ export type Lpo = {
   status: LpoStatus;
   items: LpoItem[];
   totalAmount: number;
+  paidAmount: number;
+  paymentStatus: PaymentStatus;
+  payments: LpoPayment[];
   createdBy: string;
 };
 
@@ -69,6 +81,13 @@ export type DashboardData = {
     pending: number;
     approved: number;
     rejected: number;
+  };
+  paymentSummary: {
+    paid: number;
+    unpaid: number;
+    partial: number;
+    totalAmount: number;
+    paidAmount: number;
   };
   monthlySpend: MonthlySpend[];
   topVendors: VendorSpend[];

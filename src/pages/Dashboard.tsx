@@ -179,6 +179,58 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Payment Status</CardTitle>
+              <CardDescription>Overview of payments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Total Amount:</span>
+                    <span>{formatCurrency(mockDashboardData.paymentSummary.totalAmount)}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Paid Amount:</span>
+                    <span>{formatCurrency(mockDashboardData.paymentSummary.paidAmount)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Payment Progress:</span>
+                    <span>
+                      {((mockDashboardData.paymentSummary.paidAmount / 
+                         mockDashboardData.paymentSummary.totalAmount) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary"
+                      style={{ 
+                        width: `${(mockDashboardData.paymentSummary.paidAmount / 
+                                mockDashboardData.paymentSummary.totalAmount) * 100}%` 
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="text-sm font-medium text-green-600">Paid</div>
+                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.paid}</div>
+                  </div>
+                  <div className="bg-yellow-50 p-3 rounded-lg">
+                    <div className="text-sm font-medium text-yellow-600">Partial</div>
+                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.partial}</div>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded-lg">
+                    <div className="text-sm font-medium text-red-600">Unpaid</div>
+                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.unpaid}</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
               <CardTitle className="text-lg">Monthly Spend</CardTitle>
               <CardDescription>Procurement spend by month</CardDescription>
             </CardHeader>
@@ -205,26 +257,6 @@ const Dashboard = () => {
                     <Bar dataKey="amount" fill="#8884d8" />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Top Vendors</CardTitle>
-              <CardDescription>Vendors by spending amount</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {mockDashboardData.topVendors.slice(0, 5).map((vendor, index) => (
-                  <div key={vendor.vendorId} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`w-2 h-2 rounded-full mr-2`} style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                      <span className="text-sm font-medium truncate max-w-[150px]">{vendor.vendorName}</span>
-                    </div>
-                    <span className="text-sm">{formatCurrency(vendor.totalSpend)}</span>
-                  </div>
-                ))}
               </div>
             </CardContent>
           </Card>

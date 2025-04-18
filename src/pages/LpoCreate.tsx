@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -78,6 +77,10 @@ const LpoCreate = () => {
   
   // Step state
   const [step, setStep] = useState<number>(1);
+  
+  // Payment state
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("Unpaid");
+  const [paidAmount, setPaidAmount] = useState(0);
   
   // Handle vendor selection
   const handleVendorChange = (value: string) => {
@@ -458,6 +461,40 @@ const LpoCreate = () => {
                     placeholder="Enter any additional information..."
                     className="min-h-[100px]"
                   />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Payment Information</h3>
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Total Amount:</span>
+                      <span>{formatCurrency(calculateTotal())}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Paid Amount:</span>
+                      <span>{formatCurrency(paidAmount)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Balance:</span>
+                      <span>{formatCurrency(calculateTotal() - paidAmount)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Payment Progress:</span>
+                      <span className="flex items-center gap-2">
+                        <div className="h-2 w-24 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary"
+                            style={{ 
+                              width: `${(paidAmount / calculateTotal()) * 100}%` 
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm">
+                          {((paidAmount / calculateTotal()) * 100).toFixed(1)}%
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
