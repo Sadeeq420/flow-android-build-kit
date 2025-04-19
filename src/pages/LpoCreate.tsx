@@ -119,6 +119,12 @@ const LpoCreate = () => {
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.totalPrice, 0);
   };
+
+  const calculateTotalWithPercentage = () => {
+    const baseTotal = calculateTotal();
+    const percentageAmount = (paymentPercentage / 100) * baseTotal;
+    return baseTotal + percentageAmount;
+  };
   
   const handleCreateVendor = (vendorData: Omit<Vendor, "id">) => {
     const newVendor = addVendor(vendorData);
@@ -161,14 +167,15 @@ const LpoCreate = () => {
 
   const handlePercentageChange = (value: number) => {
     setPaymentPercentage(value);
-    const newPaidAmount = (value / 100) * calculateTotal();
-    setPaidAmount(newPaidAmount);
+    const totalWithPercentage = calculateTotalWithPercentage();
+    setPaidAmount(totalWithPercentage);
   };
   
   const handlePaidAmountChange = (value: number) => {
     setPaidAmount(value);
-    const newPercentage = (value / calculateTotal()) * 100;
-    setPaymentPercentage(newPercentage);
+    const baseTotal = calculateTotal();
+    const newPercentage = ((value - baseTotal) / baseTotal) * 100;
+    setPaymentPercentage(Math.max(0, newPercentage));
   };
 
   return (
@@ -458,23 +465,11 @@ const LpoCreate = () => {
                   <h3 className="font-medium mb-2">Payment Information</h3>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Total Amount:</span>
+                      <span className="text-sm font-medium">Base Amount:</span>
                       <span>{formatCurrency(calculateTotal())}</span>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="paidAmount" className="text-sm font-medium">Paid Amount:</Label>
-                      <Input
-                        id="paidAmount"
-                        type="number"
-                        min={0}
-                        max={calculateTotal()}
-                        value={paidAmount}
-                        onChange={(e) => handlePaidAmountChange(parseFloat(e.target.value) || 0)}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="percentage" className="text-sm font-medium">Payment Percentage:</Label>
+                      <Label htmlFor="percentage" className="text-sm font-medium">Additional Percentage:</Label>
                       <div className="flex items-center gap-4">
                         <Input
                           id="percentage"
@@ -488,9 +483,21 @@ const LpoCreate = () => {
                         <span className="text-sm">%</span>
                       </div>
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="paidAmount" className="text-sm font-medium">Total Amount (with percentage):</Label>
+                      <Input
+                        id="paidAmount"
+                        type="number"
+                        min={calculateTotal()}
+                        value={paidAmount}
+                        onChange={(e) => handlePaidAmountChange(parseFloat(e.target.value) || 0)}
+                        className="w-full"
+                        disabled
+                      />
+                    </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Balance:</span>
-                      <span>{formatCurrency(calculateTotal() - paidAmount)}</span>
+                      <span className="text-sm font-medium">Additional Amount:</span>
+                      <span>{formatCurrency(paidAmount - calculateTotal())}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Payment Progress:</span>
