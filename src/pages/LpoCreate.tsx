@@ -499,17 +499,6 @@ const LpoCreate = () => {
                       <span className="text-sm font-medium">Additional Amount:</span>
                       <span>{formatCurrency(paidAmount - calculateTotal())}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Payment Progress:</span>
-                      <span className="flex items-center gap-2">
-                        <div className="h-2 w-24 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary"
-                            style={{ width: `${paymentPercentage}%` }}
-                          />
-                        </div>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </CardContent>
