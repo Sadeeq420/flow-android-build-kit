@@ -76,6 +76,7 @@ const LpoCreate = () => {
   
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("Unpaid");
   const [paidAmount, setPaidAmount] = useState(0);
+  const [paymentPercentage, setPaymentPercentage] = useState(0);
   
   const handleVendorChange = (value: string) => {
     setSelectedVendor(value);
@@ -156,6 +157,18 @@ const LpoCreate = () => {
   const finishProcess = () => {
     setShowSuccessDialog(false);
     navigate("/");
+  };
+
+  const handlePercentageChange = (value: number) => {
+    setPaymentPercentage(value);
+    const newPaidAmount = (value / 100) * calculateTotal();
+    setPaidAmount(newPaidAmount);
+  };
+  
+  const handlePaidAmountChange = (value: number) => {
+    setPaidAmount(value);
+    const newPercentage = (value / calculateTotal()) * 100;
+    setPaymentPercentage(newPercentage);
   };
 
   return (
@@ -443,14 +456,37 @@ const LpoCreate = () => {
                 
                 <div>
                   <h3 className="font-medium mb-2">Payment Information</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Total Amount:</span>
                       <span>{formatCurrency(calculateTotal())}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Paid Amount:</span>
-                      <span>{formatCurrency(paidAmount)}</span>
+                    <div className="space-y-2">
+                      <Label htmlFor="paidAmount" className="text-sm font-medium">Paid Amount:</Label>
+                      <Input
+                        id="paidAmount"
+                        type="number"
+                        min={0}
+                        max={calculateTotal()}
+                        value={paidAmount}
+                        onChange={(e) => handlePaidAmountChange(parseFloat(e.target.value) || 0)}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="percentage" className="text-sm font-medium">Payment Percentage:</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          id="percentage"
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={paymentPercentage.toFixed(1)}
+                          onChange={(e) => handlePercentageChange(parseFloat(e.target.value) || 0)}
+                          className="w-32"
+                        />
+                        <span className="text-sm">%</span>
+                      </div>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Balance:</span>
@@ -462,14 +498,9 @@ const LpoCreate = () => {
                         <div className="h-2 w-24 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-primary"
-                            style={{ 
-                              width: `${(paidAmount / calculateTotal()) * 100}%` 
-                            }}
+                            style={{ width: `${paymentPercentage}%` }}
                           />
                         </div>
-                        <span className="text-sm">
-                          {((paidAmount / calculateTotal()) * 100).toFixed(1)}%
-                        </span>
                       </span>
                     </div>
                   </div>
