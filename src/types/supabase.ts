@@ -7,4 +7,13 @@ export type SupabaseLpoInsert = Database['public']['Tables']['lpos']['Insert'];
 export type SupabaseLpoUpdate = Database['public']['Tables']['lpos']['Update'];
 export type SupabaseVendor = Database['public']['Tables']['vendors']['Row'];
 export type SupabaseLpoItem = Database['public']['Tables']['lpo_items']['Row'];
-export type SupabaseLpoPayment = Database['public']['Tables']['lpo_payments']['Row'];
+
+// We'll need to manually define the LPO payment type since it's not in the auto-generated types yet
+export interface SupabaseLpoPayment {
+  id: string;
+  lpo_id: string;
+  amount: number;
+  date: string;
+  reference: string;
+  created_at: string;
+}

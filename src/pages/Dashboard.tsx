@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -110,15 +109,10 @@ const Dashboard = () => {
 
   const handlePaymentStatusChange = async (lpoId: string, newStatus: PaymentStatus) => {
     try {
-      // We need to update to use the correct field structure expected by Supabase
-      // Since our payment_status field isn't recognized in the types, we'll need to manually cast
       const { error } = await supabase
         .from('lpos')
         .update({ 
-          // Using brackets notation to bypass TypeScript checking for this field
-          // This is necessary because our Supabase types don't include payment_status yet
-          // A proper solution would be to update the Supabase types
-          ["payment_status"]: newStatus 
+          payment_status: newStatus 
         } as any)
         .eq('id', lpoId);
 
