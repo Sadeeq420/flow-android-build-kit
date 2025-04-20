@@ -1,9 +1,10 @@
 
+import { PaymentStatus } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PaymentStatusSelectProps {
-  status: string;
-  onStatusChange: (newStatus: string) => void;
+  status: PaymentStatus;
+  onStatusChange: (newStatus: PaymentStatus) => void;
 }
 
 const PaymentStatusSelect = ({ status, onStatusChange }: PaymentStatusSelectProps) => {

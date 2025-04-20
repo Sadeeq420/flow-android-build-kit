@@ -18,7 +18,8 @@ export type Vendor = {
 
 export type LpoStatus = 'Pending' | 'Approved' | 'Rejected';
 
-export type PaymentStatus = 'Unpaid' | 'Partially Paid' | 'Fully Paid';
+// Update PaymentStatus type to include the values we're using
+export type PaymentStatus = 'Paid' | 'Yet To Be Paid';
 
 export type LpoItem = {
   id: string;
@@ -40,7 +41,7 @@ export type Lpo = {
   vendorId: string;
   vendorName: string;
   dateCreated: string;
-  status: LpoStatus;
+  status: string;
   items: LpoItem[];
   totalAmount: number;
   paidAmount: number;
@@ -93,4 +94,11 @@ export type DashboardData = {
   topVendors: VendorSpend[];
   upcomingReminders: Reminder[];
   emailReportHistory: Report[];
+  // Add paymentStatusSummary to the DashboardData type
+  paymentStatusSummary: {
+    paid: number;
+    unpaid: number;
+    totalPaid: number;
+    totalUnpaid: number;
+  };
 };

@@ -1,4 +1,5 @@
-import { User, Vendor, Lpo, Report, Reminder, DashboardData } from "./types";
+
+import { User, Vendor, Lpo, Report, Reminder, DashboardData, PaymentStatus } from "./types";
 
 // Mock Users
 export const mockUsers: User[] = [
@@ -38,7 +39,7 @@ export const mockLpos: Lpo[] = [
     vendorName: "Tech Supplies Ltd.",
     dateCreated: "2024-04-10",
     status: "Approved",
-    paymentStatus: "Paid",
+    paymentStatus: "Paid", // Now this is typed correctly
     items: [
       { id: "i1", description: "Laptop Computers", quantity: 5, unitPrice: 1200, totalPrice: 6000 },
       { id: "i2", description: "Monitors", quantity: 10, unitPrice: 250, totalPrice: 2500 }
@@ -56,7 +57,7 @@ export const mockLpos: Lpo[] = [
     vendorName: "Office Solutions Inc.",
     dateCreated: "2024-04-12",
     status: "Pending",
-    paymentStatus: "Yet To Be Paid",
+    paymentStatus: "Yet To Be Paid", // Now this is typed correctly
     items: [
       { id: "i3", description: "Office Chairs", quantity: 20, unitPrice: 150, totalPrice: 3000 },
       { id: "i4", description: "Filing Cabinets", quantity: 5, unitPrice: 200, totalPrice: 1000 }
@@ -82,49 +83,8 @@ export const mockReminders: Reminder[] = [
   { id: "rem3", title: "Inventory Check", date: "2024-05-01", time: "10:00" }
 ];
 
-// Updated Dashboard Data with payment information
+// Dashboard Data with payment information - removed duplicate declaration
 export const mockDashboardData: DashboardData = {
-  lpoStatusSummary: {
-    pending: 2,
-    approved: 1,
-    rejected: 1
-  },
-  paymentSummary: {
-    paid: 1,
-    unpaid: 2,
-    partial: 1,
-    totalAmount: 19600,
-    paidAmount: 8475
-  },
-  monthlySpend: [
-    { month: "Jan", amount: 12500 },
-    { month: "Feb", amount: 9800 },
-    { month: "Mar", amount: 15200 },
-    { month: "Apr", amount: 19600 }
-  ],
-  topVendors: [
-    { vendorId: "v1", vendorName: "Tech Supplies Ltd.", totalSpend: 22500 },
-    { vendorId: "v2", vendorName: "Office Solutions Inc.", totalSpend: 15800 },
-    { vendorId: "v3", vendorName: "Global Services Co.", totalSpend: 12000 },
-    { vendorId: "v4", vendorName: "Hardware Depot", totalSpend: 8500 },
-    { vendorId: "v5", vendorName: "Software Systems", totalSpend: 6200 }
-  ],
-  upcomingReminders: mockReminders,
-  emailReportHistory: mockReports
-};
-
-// Function to simulate authentication
-export const authenticateUser = (email: string, password: string): User | null => {
-  if (
-    (email === "jane@qumecs.com" && password === "password123") ||
-    (email === "sadiq@qumecs.com" && password === "Sadiq123")
-  ) {
-    return mockUsers.find(user => user.email === email) || null;
-  }
-  return null;
-};
-
-export const mockDashboardData = {
   lpoStatusSummary: {
     pending: 2,
     approved: 1,
@@ -158,4 +118,15 @@ export const mockDashboardData = {
     totalPaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Paid" ? lpo.totalAmount : 0), 0),
     totalUnpaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Yet To Be Paid" ? lpo.totalAmount : 0), 0)
   }
+};
+
+// Function to simulate authentication
+export const authenticateUser = (email: string, password: string): User | null => {
+  if (
+    (email === "jane@qumecs.com" && password === "password123") ||
+    (email === "sadiq@qumecs.com" && password === "Sadiq123")
+  ) {
+    return mockUsers.find(user => user.email === email) || null;
+  }
+  return null;
 };

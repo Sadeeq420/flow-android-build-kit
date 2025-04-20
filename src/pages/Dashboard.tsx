@@ -52,6 +52,7 @@ import {
   YAxis,
 } from "recharts";
 import { mockDashboardData, mockLpos } from "@/mockData";
+import { PaymentStatus } from "@/types";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 const STATUS_COLORS = {
@@ -84,7 +85,7 @@ const Dashboard = () => {
 
   const handleSendEmail = () => {
     setEmailDialogOpen(false);
-    alert("Email sent successfully!");
+    toast.success("Email sent successfully!");
   };
 
   const handleStatusChange = async (lpoId: string, newStatus: string) => {
@@ -106,11 +107,13 @@ const Dashboard = () => {
     }
   };
 
-  const handlePaymentStatusChange = async (lpoId: string, newStatus: string) => {
+  const handlePaymentStatusChange = async (lpoId: string, newStatus: PaymentStatus) => {
     try {
       const { error } = await supabase
         .from('lpos')
-        .update({ paymentStatus: newStatus })
+        .update({ 
+          payment_status: newStatus 
+        })
         .eq('id', lpoId);
 
       if (error) throw error;

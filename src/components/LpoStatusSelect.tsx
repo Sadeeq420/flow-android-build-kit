@@ -1,4 +1,5 @@
 
+import { LpoStatus } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LpoStatusSelectProps {
