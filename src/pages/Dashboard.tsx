@@ -116,7 +116,10 @@ const Dashboard = () => {
         } as any)
         .eq('id', lpoId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       const updatedLpos = mockLpos.map(lpo => 
         lpo.id === lpoId ? { ...lpo, paymentStatus: newStatus } : lpo
