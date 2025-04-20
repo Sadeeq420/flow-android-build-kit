@@ -38,6 +38,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (err) {
+      console.error('Auth error:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -58,7 +59,7 @@ const Login = () => {
             <CardDescription>Enter your credentials to continue</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -95,6 +96,13 @@ const Login = () => {
                       required
                     />
                   </div>
+                  <Button 
+                    type="submit"
+                    className="w-full mt-4" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'Login'}
+                  </Button>
                 </form>
               </TabsContent>
 
@@ -131,21 +139,17 @@ const Login = () => {
                     />
                     <p className="text-xs text-muted-foreground">Password must be at least 6 characters long.</p>
                   </div>
+                  <Button 
+                    type="submit"
+                    className="w-full mt-4" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'Sign Up'}
+                  </Button>
                 </form>
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter>
-            <Button 
-              className="w-full" 
-              onClick={handleSubmit} 
-              disabled={isLoading}
-            >
-              {isLoading ? 
-                'Processing...' : 
-                activeTab === 'login' ? 'Login' : 'Sign Up'}
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     </div>
