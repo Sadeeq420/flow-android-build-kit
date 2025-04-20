@@ -2,45 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { formatCurrency } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { 
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from "recharts";
-import { mockDashboardData, mockLpos } from "@/mockData";
-import { Mail, MessageSquare } from "lucide-react";
+import LpoStatusSelect from "@/components/LpoStatusSelect";
+import { toast } from "sonner";
+import { Trash } from "lucide-react";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 const STATUS_COLORS = {
@@ -69,6 +36,42 @@ const Dashboard = () => {
   const handleSendEmail = () => {
     setEmailDialogOpen(false);
     alert("Email sent successfully!");
+  };
+
+  const handleStatusChange = async (lpoId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('lpos')
+        .update({ status: newStatus })
+        .eq('id', lpoId);
+
+      if (error) throw error;
+      
+      const updatedLpos = mockLpos.map(lpo => 
+        lpo.id === lpoId ? { ...lpo, status: newStatus } : lpo
+      );
+      toast.success('LPO status updated successfully');
+    } catch (error) {
+      console.error('Error updating LPO status:', error);
+      toast.error('Failed to update LPO status');
+    }
+  };
+
+  const handleDeleteLpo = async (lpoId: string) => {
+    try {
+      const { error } = await supabase
+        .from('lpos')
+        .delete()
+        .eq('id', lpoId);
+
+      if (error) throw error;
+      
+      const updatedLpos = mockLpos.filter(lpo => lpo.id !== lpoId);
+      toast.success('LPO deleted successfully');
+    } catch (error) {
+      console.error('Error deleting LPO:', error);
+      toast.error('Failed to delete LPO');
+    }
   };
 
   return (
@@ -284,6 +287,7 @@ const Dashboard = () => {
                       <TableHead>Date</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -294,15 +298,20 @@ const Dashboard = () => {
                         <TableCell>{lpo.dateCreated}</TableCell>
                         <TableCell>{formatCurrency(lpo.totalAmount)}</TableCell>
                         <TableCell>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            lpo.status === "Approved" 
-                              ? "bg-green-100 text-green-800" 
-                              : lpo.status === "Rejected" 
-                              ? "bg-red-100 text-red-800" 
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}>
-                            {lpo.status}
-                          </span>
+                          <LpoStatusSelect 
+                            status={lpo.status}
+                            onStatusChange={(newStatus) => handleStatusChange(lpo.id, newStatus)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteLpo(lpo.id)}
+                            className="text-destructive hover:text-destructive/90"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
