@@ -165,19 +165,38 @@ const LpoCreate = () => {
     navigate("/");
   };
 
+  const handleQuantityChange = (item: LpoItem, newQuantity: number) => {
+    setItems(items.map(i => {
+      if (i.id === item.id) {
+        return {
+          ...i,
+          quantity: newQuantity,
+          totalPrice: newQuantity * i.unitPrice
+        };
+      }
+      return i;
+    }));
+  };
+
+  const handleUnitPriceChange = (item: LpoItem, newPrice: number) => {
+    setItems(items.map(i => {
+      if (i.id === item.id) {
+        return {
+          ...i,
+          unitPrice: newPrice,
+          totalPrice: i.quantity * newPrice
+        };
+      }
+      return i;
+    }));
+  };
+
   const handlePercentageChange = (value: number) => {
     setPaymentPercentage(value);
     const totalWithPercentage = calculateTotalWithPercentage();
     setPaidAmount(totalWithPercentage);
   };
   
-  const handlePaidAmountChange = (value: number) => {
-    setPaidAmount(value);
-    const baseTotal = calculateTotal();
-    const newPercentage = ((value - baseTotal) / baseTotal) * 100;
-    setPaymentPercentage(Math.max(0, newPercentage));
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header user={user} onLogout={logout} />
@@ -336,8 +355,25 @@ const LpoCreate = () => {
                         {items.map((item) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.description}</TableCell>
-                            <TableCell className="text-right">{item.quantity}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
+                            <TableCell className="text-right">
+                              <Input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => handleQuantityChange(item, parseInt(e.target.value) || 0)}
+                                className="w-20 text-right"
+                              />
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.unitPrice}
+                                onChange={(e) => handleUnitPriceChange(item, parseFloat(e.target.value) || 0)}
+                                className="w-28 text-right"
+                              />
+                            </TableCell>
                             <TableCell className="text-right">{formatCurrency(item.totalPrice)}</TableCell>
                             <TableCell>
                               <Button
@@ -435,8 +471,25 @@ const LpoCreate = () => {
                       {items.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell>{item.description}</TableCell>
-                          <TableCell className="text-right">{item.quantity}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
+                          <TableCell className="text-right">
+                            <Input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) => handleQuantityChange(item, parseInt(e.target.value) || 0)}
+                              className="w-20 text-right"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.unitPrice}
+                              onChange={(e) => handleUnitPriceChange(item, parseFloat(e.target.value) || 0)}
+                              className="w-28 text-right"
+                            />
+                          </TableCell>
                           <TableCell className="text-right">{formatCurrency(item.totalPrice)}</TableCell>
                         </TableRow>
                       ))}
@@ -476,7 +529,7 @@ const LpoCreate = () => {
                           type="number"
                           min={0}
                           max={100}
-                          value={paymentPercentage.toFixed(1)}
+                          value={paymentPercentage}
                           onChange={(e) => handlePercentageChange(parseFloat(e.target.value) || 0)}
                           className="w-32"
                         />
