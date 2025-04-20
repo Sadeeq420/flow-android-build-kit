@@ -74,7 +74,7 @@ const LpoCreate = () => {
   
   const [step, setStep] = useState<number>(1);
   
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("Unpaid");
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("Yet To Be Paid");
   const [paidAmount, setPaidAmount] = useState(0);
   const [paymentPercentage, setPaymentPercentage] = useState(0);
   

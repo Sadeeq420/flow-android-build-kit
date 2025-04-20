@@ -16,6 +16,7 @@ const PaymentStatusSelect = ({ status, onStatusChange }: PaymentStatusSelectProp
       <SelectContent>
         <SelectItem value="Paid">Paid</SelectItem>
         <SelectItem value="Yet To Be Paid">Yet To Be Paid</SelectItem>
+        <SelectItem value="Unpaid">Unpaid</SelectItem>
       </SelectContent>
     </Select>
   );

@@ -1,4 +1,3 @@
-
 // Define types for the application
 
 export type User = {
@@ -19,7 +18,7 @@ export type Vendor = {
 export type LpoStatus = 'Pending' | 'Approved' | 'Rejected';
 
 // Update PaymentStatus type to include the values we're using
-export type PaymentStatus = 'Paid' | 'Yet To Be Paid';
+export type PaymentStatus = 'Paid' | 'Yet To Be Paid' | 'Unpaid';
 
 export type LpoItem = {
   id: string;
