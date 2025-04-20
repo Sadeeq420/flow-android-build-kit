@@ -1,24 +1,23 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface LpoStatusSelectProps {
+interface PaymentStatusSelectProps {
   status: string;
   onStatusChange: (newStatus: string) => void;
 }
 
-const LpoStatusSelect = ({ status, onStatusChange }: LpoStatusSelectProps) => {
+const PaymentStatusSelect = ({ status, onStatusChange }: PaymentStatusSelectProps) => {
   return (
     <Select value={status} onValueChange={onStatusChange}>
       <SelectTrigger className="w-[130px]">
         <SelectValue>{status}</SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="Pending">Pending</SelectItem>
-        <SelectItem value="Approved">Approved</SelectItem>
-        <SelectItem value="Rejected">Rejected</SelectItem>
+        <SelectItem value="Paid">Paid</SelectItem>
+        <SelectItem value="Yet To Be Paid">Yet To Be Paid</SelectItem>
       </SelectContent>
     </Select>
   );
 };
 
-export default LpoStatusSelect;
+export default PaymentStatusSelect;

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -7,9 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import LpoStatusSelect from "@/components/LpoStatusSelect";
+import PaymentStatusSelect from "@/components/PaymentStatusSelect";
 import { toast } from "sonner";
 import { Trash, MessageSquare, Mail } from "lucide-react";
-// Import UI components
 import {
   Card,
   CardContent,
@@ -39,7 +38,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-// Import Recharts components
 import {
   ResponsiveContainer,
   PieChart,
@@ -53,7 +51,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-// Import mock data
 import { mockDashboardData, mockLpos } from "@/mockData";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
@@ -80,6 +77,11 @@ const Dashboard = () => {
     { name: "Rejected", value: mockDashboardData.lpoStatusSummary.rejected },
   ];
 
+  const paymentStatusData = [
+    { name: "Paid", value: mockDashboardData.paymentStatusSummary.totalPaid },
+    { name: "Yet To Be Paid", value: mockDashboardData.paymentStatusSummary.totalUnpaid }
+  ];
+
   const handleSendEmail = () => {
     setEmailDialogOpen(false);
     alert("Email sent successfully!");
@@ -101,6 +103,25 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error updating LPO status:', error);
       toast.error('Failed to update LPO status');
+    }
+  };
+
+  const handlePaymentStatusChange = async (lpoId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('lpos')
+        .update({ paymentStatus: newStatus })
+        .eq('id', lpoId);
+
+      if (error) throw error;
+      
+      const updatedLpos = mockLpos.map(lpo => 
+        lpo.id === lpoId ? { ...lpo, paymentStatus: newStatus } : lpo
+      );
+      toast.success('LPO payment status updated successfully');
+    } catch (error) {
+      console.error('Error updating LPO payment status:', error);
+      toast.error('Failed to update LPO payment status');
     }
   };
 
@@ -230,51 +251,30 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Payment Status</CardTitle>
-              <CardDescription>Overview of payments</CardDescription>
+              <CardDescription>Distribution of paid vs unpaid LPOs</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex flex-col">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium">Total Amount:</span>
-                    <span>{formatCurrency(mockDashboardData.paymentSummary.totalAmount)}</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium">Paid Amount:</span>
-                    <span>{formatCurrency(mockDashboardData.paymentSummary.paidAmount)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Payment Progress:</span>
-                    <span>
-                      {((mockDashboardData.paymentSummary.paidAmount / 
-                         mockDashboardData.paymentSummary.totalAmount) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary"
-                      style={{ 
-                        width: `${(mockDashboardData.paymentSummary.paidAmount / 
-                                mockDashboardData.paymentSummary.totalAmount) * 100}%` 
-                      }}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <div className="text-sm font-medium text-green-600">Paid</div>
-                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.paid}</div>
-                  </div>
-                  <div className="bg-yellow-50 p-3 rounded-lg">
-                    <div className="text-sm font-medium text-yellow-600">Partial</div>
-                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.partial}</div>
-                  </div>
-                  <div className="bg-red-50 p-3 rounded-lg">
-                    <div className="text-sm font-medium text-red-600">Unpaid</div>
-                    <div className="text-2xl font-semibold">{mockDashboardData.paymentSummary.unpaid}</div>
-                  </div>
-                </div>
+              <div className="h-64 w-full">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={paymentStatusData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {paymentStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -334,6 +334,7 @@ const Dashboard = () => {
                       <TableHead>Date</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Payment Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -348,6 +349,12 @@ const Dashboard = () => {
                           <LpoStatusSelect 
                             status={lpo.status}
                             onStatusChange={(newStatus) => handleStatusChange(lpo.id, newStatus)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <PaymentStatusSelect
+                            status={lpo.paymentStatus}
+                            onStatusChange={(newStatus) => handlePaymentStatusChange(lpo.id, newStatus)}
                           />
                         </TableCell>
                         <TableCell>

@@ -1,4 +1,3 @@
-
 import { User, Vendor, Lpo, Report, Reminder, DashboardData } from "./types";
 
 // Mock Users
@@ -39,16 +38,15 @@ export const mockLpos: Lpo[] = [
     vendorName: "Tech Supplies Ltd.",
     dateCreated: "2024-04-10",
     status: "Approved",
+    paymentStatus: "Paid",
     items: [
       { id: "i1", description: "Laptop Computers", quantity: 5, unitPrice: 1200, totalPrice: 6000 },
       { id: "i2", description: "Monitors", quantity: 10, unitPrice: 250, totalPrice: 2500 }
     ],
     totalAmount: 8500,
-    paidAmount: 6375,
-    paymentStatus: "Partially Paid",
+    paidAmount: 8500,
     payments: [
-      { id: "p1", amount: 4250, date: "2024-04-15", reference: "PAY001" },
-      { id: "p2", amount: 2125, date: "2024-04-20", reference: "PAY002" }
+      { id: "p1", amount: 8500, date: "2024-04-15", reference: "PAY001" }
     ],
     createdBy: "2"
   },
@@ -58,46 +56,15 @@ export const mockLpos: Lpo[] = [
     vendorName: "Office Solutions Inc.",
     dateCreated: "2024-04-12",
     status: "Pending",
+    paymentStatus: "Yet To Be Paid",
     items: [
       { id: "i3", description: "Office Chairs", quantity: 20, unitPrice: 150, totalPrice: 3000 },
       { id: "i4", description: "Filing Cabinets", quantity: 5, unitPrice: 200, totalPrice: 1000 }
     ],
     totalAmount: 4000,
     paidAmount: 0,
-    paymentStatus: "Unpaid",
     payments: [],
     createdBy: "1"
-  },
-  {
-    id: "lpo3",
-    vendorId: "v3",
-    vendorName: "Global Services Co.",
-    dateCreated: "2024-04-15",
-    status: "Rejected",
-    items: [
-      { id: "i5", description: "Consulting Services", quantity: 1, unitPrice: 5000, totalPrice: 5000 }
-    ],
-    totalAmount: 5000,
-    paidAmount: 0,
-    paymentStatus: "Unpaid",
-    payments: [],
-    createdBy: "2"
-  },
-  {
-    id: "lpo4",
-    vendorId: "v4",
-    vendorName: "Hardware Depot",
-    dateCreated: "2024-04-16",
-    status: "Pending",
-    items: [
-      { id: "i6", description: "Network Switches", quantity: 3, unitPrice: 500, totalPrice: 1500 },
-      { id: "i7", description: "Routers", quantity: 2, unitPrice: 300, totalPrice: 600 }
-    ],
-    totalAmount: 2100,
-    paidAmount: 0,
-    paymentStatus: "Unpaid",
-    payments: [],
-    createdBy: "3"
   }
 ];
 
@@ -155,4 +122,40 @@ export const authenticateUser = (email: string, password: string): User | null =
     return mockUsers.find(user => user.email === email) || null;
   }
   return null;
+};
+
+export const mockDashboardData = {
+  lpoStatusSummary: {
+    pending: 2,
+    approved: 1,
+    rejected: 1
+  },
+  paymentSummary: {
+    paid: 1,
+    unpaid: 2,
+    partial: 1,
+    totalAmount: 19600,
+    paidAmount: 8475
+  },
+  monthlySpend: [
+    { month: "Jan", amount: 12500 },
+    { month: "Feb", amount: 9800 },
+    { month: "Mar", amount: 15200 },
+    { month: "Apr", amount: 19600 }
+  ],
+  topVendors: [
+    { vendorId: "v1", vendorName: "Tech Supplies Ltd.", totalSpend: 22500 },
+    { vendorId: "v2", vendorName: "Office Solutions Inc.", totalSpend: 15800 },
+    { vendorId: "v3", vendorName: "Global Services Co.", totalSpend: 12000 },
+    { vendorId: "v4", vendorName: "Hardware Depot", totalSpend: 8500 },
+    { vendorId: "v5", vendorName: "Software Systems", totalSpend: 6200 }
+  ],
+  upcomingReminders: mockReminders,
+  emailReportHistory: mockReports,
+  paymentStatusSummary: {
+    paid: mockLpos.filter(lpo => lpo.paymentStatus === "Paid").length,
+    unpaid: mockLpos.filter(lpo => lpo.paymentStatus === "Yet To Be Paid").length,
+    totalPaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Paid" ? lpo.totalAmount : 0), 0),
+    totalUnpaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Yet To Be Paid" ? lpo.totalAmount : 0), 0)
+  }
 };
