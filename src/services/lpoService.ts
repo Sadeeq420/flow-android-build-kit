@@ -63,8 +63,8 @@ export const lpoService = {
       vendorName: lpo.vendor.name,
       dateCreated: lpo.date_created,
       status: lpo.status,
-      // Default to 'Unpaid' if payment_status doesn't exist
-      paymentStatus: (lpo.payment_status as PaymentStatus) || 'Unpaid',
+      // Use type assertion to handle the payment_status property
+      paymentStatus: ((lpo as any).payment_status as PaymentStatus) || 'Unpaid',
       items: lpo.items.map((item: any) => ({
         id: item.id,
         description: item.description,
@@ -89,9 +89,10 @@ export const lpoService = {
   },
 
   async updatePaymentStatus(id: string, paymentStatus: PaymentStatus): Promise<void> {
+    // Use a type assertion to tell TypeScript that payment_status is a valid field
     const { error } = await supabase
       .from('lpos')
-      .update({ payment_status: paymentStatus })
+      .update({ payment_status: paymentStatus } as any)
       .eq('id', id);
 
     if (error) throw error;
