@@ -13,7 +13,7 @@ import { MonthlySpendChart } from "@/components/dashboard/MonthlySpendChart";
 import { LpoTable } from "@/components/dashboard/LpoTable";
 import { EmailReportDialog } from "@/components/dashboard/EmailReportDialog";
 import Header from "@/components/Header";
-import { Lpo, Reminder, Report } from "@/types";
+import { Lpo, Reminder, Report, PaymentStatus } from "@/types";
 import { reminderService } from "@/services/reminderService";
 import { reportService } from "@/services/reportService";
 import { ReminderTable } from "@/components/dashboard/ReminderTable";
@@ -80,9 +80,10 @@ const Dashboard = () => {
 
   const handlePaymentStatusChange = async (lpoId: string, newStatus: string) => {
     try {
-      await lpoService.updatePaymentStatus(lpoId, newStatus);
+      const typedStatus = newStatus as PaymentStatus;
+      await lpoService.updatePaymentStatus(lpoId, typedStatus);
       setLpos(lpos.map(lpo => 
-        lpo.id === lpoId ? { ...lpo, paymentStatus: newStatus } : lpo
+        lpo.id === lpoId ? { ...lpo, paymentStatus: typedStatus } : lpo
       ));
       toast.success('LPO payment status updated successfully');
     } catch (error) {

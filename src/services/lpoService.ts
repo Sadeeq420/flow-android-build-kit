@@ -13,15 +13,16 @@ export const lpoService = {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error('User not authenticated');
 
+    // Fix: Changed from array to single object and use user_id instead of created_by
     const { data: lpo, error: lpoError } = await supabase
       .from('lpos')
-      .insert([{
+      .insert({
         vendor_id: lpoData.vendorId,
         total_amount: lpoData.totalAmount,
         additional_percentage: lpoData.additionalPercentage,
         additional_notes: lpoData.additionalNotes,
-        created_by: user.user.id,
-      }])
+        user_id: user.user.id
+      })
       .select()
       .single();
 
@@ -62,7 +63,8 @@ export const lpoService = {
       vendorName: lpo.vendor.name,
       dateCreated: lpo.date_created,
       status: lpo.status,
-      paymentStatus: lpo.payment_status as PaymentStatus,
+      // Default to 'Unpaid' if payment_status doesn't exist
+      paymentStatus: (lpo.payment_status as PaymentStatus) || 'Unpaid',
       items: lpo.items.map((item: any) => ({
         id: item.id,
         description: item.description,
@@ -73,7 +75,7 @@ export const lpoService = {
       totalAmount: lpo.total_amount,
       paidAmount: 0, // We'll need to calculate this from payments
       payments: [], // We'll need to fetch this separately
-      createdBy: lpo.created_by,
+      createdBy: lpo.user_id,
     }));
   },
 
