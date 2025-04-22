@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { lpoService } from "@/services/lpoService";
+import { vendorService } from "@/services/vendorService";
 import Header from "@/components/Header";
 import { VendorForm } from "@/components/VendorForm";
 import { Button } from "@/components/ui/button";
@@ -138,12 +140,28 @@ const LpoCreate = () => {
     toast.success(`Vendor "${newVendor.name}" added successfully`);
   };
   
-  const handleSubmit = () => {
-    setShowSuccessDialog(true);
-    
-    const statuses = ["Pending", "Approved", "Rejected"];
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-    setLpoStatus(randomStatus);
+  const handleSubmit = async () => {
+    try {
+      if (!selectedVendor || items.length === 0) return;
+
+      const lpoData = {
+        vendorId: selectedVendor,
+        items: items,
+        totalAmount: calculateTotal(),
+        additionalPercentage: paymentPercentage,
+        additionalNotes: "",
+      };
+
+      await lpoService.createLpo(lpoData);
+      setShowSuccessDialog(true);
+      
+      const statuses = ["Pending", "Approved", "Rejected"];
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      setLpoStatus(randomStatus);
+    } catch (error) {
+      console.error('Error creating LPO:', error);
+      toast.error('Failed to create LPO. Please try again.');
+    }
   };
   
   const nextStep = () => {

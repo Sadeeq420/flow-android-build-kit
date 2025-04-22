@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { lpoService } from "@/services/lpoService";
+import { reminderService } from "@/services/reminderService";
+import { reportService } from "@/services/reportService";
 import { formatCurrency } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -72,6 +75,31 @@ const Dashboard = () => {
     message: "Please find attached the latest procurement dashboard report.",
   });
 
+  const [lpos, setLpos] = useState<Lpo[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [lposData, remindersData, reportsData] = await Promise.all([
+          lpoService.getLpos(),
+          reminderService.getReminders(),
+          reportService.getReports(),
+        ]);
+
+        setLpos(lposData);
+        setReminders(remindersData);
+        setReports(reportsData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        toast.error('Failed to load dashboard data');
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const lpoStatusData = [
     { name: "Pending", value: mockDashboardData.lpoStatusSummary.pending },
     { name: "Approved", value: mockDashboardData.lpoStatusSummary.approved },
@@ -90,16 +118,10 @@ const Dashboard = () => {
 
   const handleStatusChange = async (lpoId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('lpos')
-        .update({ status: newStatus })
-        .eq('id', lpoId);
-
-      if (error) throw error;
-      
-      const updatedLpos = mockLpos.map(lpo => 
+      await lpoService.updateLpoStatus(lpoId, newStatus);
+      setLpos(lpos.map(lpo => 
         lpo.id === lpoId ? { ...lpo, status: newStatus } : lpo
-      );
+      ));
       toast.success('LPO status updated successfully');
     } catch (error) {
       console.error('Error updating LPO status:', error);
@@ -109,21 +131,10 @@ const Dashboard = () => {
 
   const handlePaymentStatusChange = async (lpoId: string, newStatus: PaymentStatus) => {
     try {
-      const { error } = await supabase
-        .from('lpos')
-        .update({ 
-          payment_status: newStatus 
-        } as any)
-        .eq('id', lpoId);
-
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-      
-      const updatedLpos = mockLpos.map(lpo => 
+      await lpoService.updatePaymentStatus(lpoId, newStatus);
+      setLpos(lpos.map(lpo => 
         lpo.id === lpoId ? { ...lpo, paymentStatus: newStatus } : lpo
-      );
+      ));
       toast.success('LPO payment status updated successfully');
     } catch (error) {
       console.error('Error updating LPO payment status:', error);
@@ -133,14 +144,8 @@ const Dashboard = () => {
 
   const handleDeleteLpo = async (lpoId: string) => {
     try {
-      const { error } = await supabase
-        .from('lpos')
-        .delete()
-        .eq('id', lpoId);
-
-      if (error) throw error;
-      
-      const updatedLpos = mockLpos.filter(lpo => lpo.id !== lpoId);
+      await lpoService.deleteLpo(lpoId);
+      setLpos(lpos.filter(lpo => lpo.id !== lpoId));
       toast.success('LPO deleted successfully');
     } catch (error) {
       console.error('Error deleting LPO:', error);
@@ -345,7 +350,7 @@ const Dashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockLpos.map((lpo) => (
+                    {lpos.map((lpo) => (
                       <TableRow key={lpo.id}>
                         <TableCell className="font-medium">{lpo.id}</TableCell>
                         <TableCell>{lpo.vendorName}</TableCell>
@@ -398,7 +403,7 @@ const Dashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockDashboardData.upcomingReminders.map((reminder) => (
+                    {reminders.map((reminder) => (
                       <TableRow key={reminder.id}>
                         <TableCell className="font-medium">{reminder.title}</TableCell>
                         <TableCell>{reminder.date}</TableCell>
@@ -434,7 +439,7 @@ const Dashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockDashboardData.emailReportHistory.map((report) => (
+                    {reports.map((report) => (
                       <TableRow key={report.id}>
                         <TableCell className="font-medium">{report.title}</TableCell>
                         <TableCell>{report.type}</TableCell>

@@ -118,6 +118,44 @@ export type Database = {
           },
         ]
       }
+      lpo_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          date: string
+          id: string
+          lpo_id: string
+          reference: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          created_by: string
+          date?: string
+          id?: string
+          lpo_id: string
+          reference: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          date?: string
+          id?: string
+          lpo_id?: string
+          reference?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lpo_payments_lpo_id_fkey"
+            columns: ["lpo_id"]
+            isOneToOne: false
+            referencedRelation: "lpos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lpos: {
         Row: {
           additional_notes: string | null
@@ -171,6 +209,90 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          name: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          time: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          time: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          time?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          created_by: string
+          date_sent: string
+          id: string
+          recipients: string[]
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          date_sent?: string
+          id?: string
+          recipients: string[]
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          date_sent?: string
+          id?: string
+          recipients?: string[]
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       vendors: {
         Row: {
           address: string | null
@@ -206,7 +328,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "Manager" | "Procurement Officer" | "Finance" | "User"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -321,6 +443,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["Manager", "Procurement Officer", "Finance", "User"],
+    },
   },
 } as const
