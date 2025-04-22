@@ -543,7 +543,7 @@ const LpoCreate = () => {
                         type="number"
                         min={calculateTotal()}
                         value={paidAmount}
-                        onChange={(e) => handlePaidAmountChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => setPaidAmount(parseFloat(e.target.value) || 0)}
                         className="w-full"
                         disabled
                       />
