@@ -1,25 +1,23 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { lpoService } from "@/services/lpoService";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MessageSquare } from "lucide-react";
+import { toast } from "sonner";
+import { LpoStatusChart } from "@/components/dashboard/LpoStatusChart";
+import { PaymentStatusChart } from "@/components/dashboard/PaymentStatusChart";
+import { MonthlySpendChart } from "@/components/dashboard/MonthlySpendChart";
+import { LpoTable } from "@/components/dashboard/LpoTable";
+import { EmailReportDialog } from "@/components/dashboard/EmailReportDialog";
+import Header from "@/components/Header";
+import { Lpo, Reminder, Report } from "@/types";
 import { reminderService } from "@/services/reminderService";
 import { reportService } from "@/services/reportService";
-import { formatCurrency } from "@/lib/utils";
-import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
-import LpoStatusSelect from "@/components/LpoStatusSelect";
-import PaymentStatusSelect from "@/components/PaymentStatusSelect";
-import { toast } from "sonner";
-import { Trash, MessageSquare, Mail } from "lucide-react";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { Lpo, PaymentStatus, Reminder, Report } from "@/types";
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-const STATUS_COLORS = {
-  Pending: "#FFBB28",
-  Approved: "#00C49F",
-  Rejected: "#FF8042"
-};
+import { ReminderTable } from "@/components/dashboard/ReminderTable";
+import { ReportTable } from "@/components/dashboard/ReportTable";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -58,16 +56,9 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const lpoStatusData = dashboardData ? [
-    { name: "Pending", value: dashboardData.lpoStatusSummary.pending },
-    { name: "Approved", value: dashboardData.lpoStatusSummary.approved },
-    { name: "Rejected", value: dashboardData.lpoStatusSummary.rejected },
-  ] : [];
-
-  const paymentStatusData = dashboardData ? [
-    { name: "Paid", value: dashboardData.paymentStatusSummary.totalPaid },
-    { name: "Yet To Be Paid", value: dashboardData.paymentStatusSummary.totalUnpaid }
-  ] : [];
+  const handleEmailFormChange = (field: string, value: string) => {
+    setEmailForm(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSendEmail = () => {
     setEmailDialogOpen(false);
@@ -87,7 +78,7 @@ const Dashboard = () => {
     }
   };
 
-  const handlePaymentStatusChange = async (lpoId: string, newStatus: PaymentStatus) => {
+  const handlePaymentStatusChange = async (lpoId: string, newStatus: string) => {
     try {
       await lpoService.updatePaymentStatus(lpoId, newStatus);
       setLpos(lpos.map(lpo => 
@@ -111,318 +102,83 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header user={user} onLogout={logout} />
+        <div className="flex items-center justify-center h-full">
+          <p>Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const lpoStatusData = [
+    { name: "Pending", value: dashboardData?.lpoStatusSummary.pending || 0 },
+    { name: "Approved", value: dashboardData?.lpoStatusSummary.approved || 0 },
+    { name: "Rejected", value: dashboardData?.lpoStatusSummary.rejected || 0 },
+  ];
+
+  const paymentStatusData = [
+    { name: "Paid", value: dashboardData?.paymentStatusSummary.totalPaid || 0 },
+    { name: "Yet To Be Paid", value: dashboardData?.paymentStatusSummary.totalUnpaid || 0 }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header user={user} onLogout={logout} />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <p>Loading dashboard data...</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Procurement Dashboard</h1>
+            <p className="text-gray-600">Overview of procurement activities</p>
           </div>
-        ) : (
-          <>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <div>
-                <h1 className="text-3xl font-bold">Procurement Dashboard</h1>
-                <p className="text-gray-600">Overview of procurement activities</p>
-              </div>
-              <div className="flex gap-3">
-                <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Mail className="h-4 w-4 mr-2" /> 
-                      Send Report
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Send Dashboard Report</DialogTitle>
-                      <DialogDescription>
-                        Send the current dashboard as a report via email.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="recipients">Recipients</Label>
-                        <Input
-                          id="recipients"
-                          placeholder="email@example.com"
-                          value={emailForm.recipients}
-                          onChange={(e) => setEmailForm({...emailForm, recipients: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="subject">Subject</Label>
-                        <Input
-                          id="subject"
-                          value={emailForm.subject}
-                          onChange={(e) => setEmailForm({...emailForm, subject: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea
-                          id="message"
-                          value={emailForm.message}
-                          onChange={(e) => setEmailForm({...emailForm, message: e.target.value})}
-                          className="min-h-[100px]"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setEmailDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleSendEmail}>
-                        Send Email
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                
-                <Button onClick={() => navigate("/email-report")}>
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Schedule Report
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">LPO Status</CardTitle>
-                  <CardDescription>Distribution of LPO statuses</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={lpoStatusData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {lpoStatusData.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={STATUS_COLORS[entry.name as keyof typeof STATUS_COLORS] || COLORS[index % COLORS.length]} 
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Payment Status</CardTitle>
-                  <CardDescription>Distribution of paid vs unpaid LPOs</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer>
-                      <PieChart>
-                        <Pie
-                          data={paymentStatusData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {paymentStatusData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Monthly Spend</CardTitle>
-                  <CardDescription>Procurement spend by month</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={mockDashboardData.monthlySpend}
-                        margin={{
-                          top: 20,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis 
-                          tickFormatter={(value) => formatCurrency(value)} 
-                        />
-                        <Tooltip 
-                          formatter={(value) => [formatCurrency(value), 'Amount']} 
-                        />
-                        <Bar dataKey="amount" fill="#8884d8" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Tabs defaultValue="lpos">
-              <TabsList className="mb-4">
-                <TabsTrigger value="lpos">LPOs</TabsTrigger>
-                <TabsTrigger value="reminders">Upcoming Reminders</TabsTrigger>
-                <TabsTrigger value="reports">Email Report History</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="lpos" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent LPOs</CardTitle>
-                    <CardDescription>List of recent purchase orders</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>LPO ID</TableHead>
-                          <TableHead>Vendor</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Payment Status</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {lpos.map((lpo) => (
-                          <TableRow key={lpo.id}>
-                            <TableCell className="font-medium">{lpo.id}</TableCell>
-                            <TableCell>{lpo.vendorName}</TableCell>
-                            <TableCell>{lpo.dateCreated}</TableCell>
-                            <TableCell>{formatCurrency(lpo.totalAmount)}</TableCell>
-                            <TableCell>
-                              <LpoStatusSelect 
-                                status={lpo.status}
-                                onStatusChange={(newStatus) => handleStatusChange(lpo.id, newStatus)}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <PaymentStatusSelect
-                                status={lpo.paymentStatus}
-                                onStatusChange={(newStatus) => handlePaymentStatusChange(lpo.id, newStatus)}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteLpo(lpo.id)}
-                                className="text-destructive hover:text-destructive/90"
-                              >
-                                <Trash className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="reminders" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Upcoming Reminders</CardTitle>
-                    <CardDescription>Scheduled reminders and events</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Time</TableHead>
-                          <TableHead>Notes</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {reminders.map((reminder) => (
-                          <TableRow key={reminder.id}>
-                            <TableCell className="font-medium">{reminder.title}</TableCell>
-                            <TableCell>{reminder.date}</TableCell>
-                            <TableCell>{reminder.time}</TableCell>
-                            <TableCell>{reminder.notes || "-"}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <div className="mt-4 flex justify-end">
-                      <Button variant="outline" onClick={() => navigate("/email-report")}>
-                        Add Reminder
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="reports" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Email Report History</CardTitle>
-                    <CardDescription>Previously sent report emails</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Report Title</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Date Sent</TableHead>
-                          <TableHead>Recipients</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {reports.map((report) => (
-                          <TableRow key={report.id}>
-                            <TableCell className="font-medium">{report.title}</TableCell>
-                            <TableCell>{report.type}</TableCell>
-                            <TableCell>{report.dateSent}</TableCell>
-                            <TableCell>
-                              {report.recipients.length > 1 
-                                ? `${report.recipients[0]} +${report.recipients.length - 1}` 
-                                : report.recipients[0]}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </>
-        )}
+          <div className="flex gap-3">
+            <EmailReportDialog
+              open={emailDialogOpen}
+              onOpenChange={setEmailDialogOpen}
+              emailForm={emailForm}
+              onEmailFormChange={handleEmailFormChange}
+              onSendEmail={handleSendEmail}
+            />
+            <Button onClick={() => navigate("/email-report")}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Schedule Report
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <LpoStatusChart data={lpoStatusData} />
+          <PaymentStatusChart data={paymentStatusData} />
+          <MonthlySpendChart data={dashboardData?.monthlySpend || []} />
+        </div>
+        
+        <Tabs defaultValue="lpos">
+          <TabsList className="mb-4">
+            <TabsTrigger value="lpos">LPOs</TabsTrigger>
+            <TabsTrigger value="reminders">Upcoming Reminders</TabsTrigger>
+            <TabsTrigger value="reports">Email Report History</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="lpos" className="space-y-4">
+            <LpoTable
+              lpos={lpos}
+              onStatusChange={handleStatusChange}
+              onPaymentStatusChange={handlePaymentStatusChange}
+              onDelete={handleDeleteLpo}
+            />
+          </TabsContent>
+          
+          <TabsContent value="reminders" className="space-y-4">
+            <ReminderTable reminders={reminders} />
+          </TabsContent>
+          
+          <TabsContent value="reports" className="space-y-4">
+            <ReportTable reports={reports} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

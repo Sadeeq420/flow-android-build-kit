@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DashboardData, MonthlySpend, VendorSpend } from '@/types';
+import { DashboardData, MonthlySpend, VendorSpend, Lpo } from '@/types';
 import { toast } from 'sonner';
 
 export const useDashboardData = () => {
@@ -85,6 +84,13 @@ export const useDashboardData = () => {
 
         setDashboardData({
           lpoStatusSummary,
+          paymentSummary: {
+            paid: paymentData.length,
+            unpaid: statusData.length - paymentData.length,
+            totalAmount,
+            paidAmount: totalPaid,
+            partial: 0, // Add this to match the type
+          },
           paymentStatusSummary: {
             paid: paymentData.length,
             unpaid: statusData.length - paymentData.length,
@@ -93,8 +99,8 @@ export const useDashboardData = () => {
           },
           monthlySpend,
           topVendors: vendorSpend,
-          upcomingReminders: [], // This will be handled by the reminders service
-          emailReportHistory: [], // This will be handled by the reports service
+          upcomingReminders: [],
+          emailReportHistory: [],
         });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);

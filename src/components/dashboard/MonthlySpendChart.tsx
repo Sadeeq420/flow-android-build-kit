@@ -1,0 +1,42 @@
+
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { formatCurrency } from '@/lib/utils';
+import { MonthlySpend } from '@/types';
+
+interface MonthlySpendChartProps {
+  data: MonthlySpend[];
+}
+
+export const MonthlySpendChart: React.FC<MonthlySpendChartProps> = ({ data }) => {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">Monthly Spend</CardTitle>
+        <CardDescription>Procurement spend by month</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="h-64 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis tickFormatter={(value) => formatCurrency(value)} />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Amount']} />
+              <Bar dataKey="amount" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
