@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
@@ -6,7 +5,6 @@ import { formatCurrency } from '@/lib/utils';
 
 const COLORS = {
   "Paid": "#00C49F",
-  "Yet To Be Paid": "#FFBB28",
   "Unpaid": "#FF8042"
 };
 

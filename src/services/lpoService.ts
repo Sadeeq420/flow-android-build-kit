@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Lpo, LpoItem, PaymentStatus } from '@/types';
 
@@ -89,7 +88,6 @@ export const lpoService = {
   },
 
   async updatePaymentStatus(id: string, paymentStatus: PaymentStatus): Promise<void> {
-    // Use a type assertion to tell TypeScript that payment_status is a valid field
     const { error } = await supabase
       .from('lpos')
       .update({ payment_status: paymentStatus } as any)

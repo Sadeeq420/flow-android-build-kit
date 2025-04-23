@@ -1,4 +1,3 @@
-
 import { User, Vendor, Lpo, Report, Reminder, DashboardData, PaymentStatus } from "./types";
 
 // Mock Users
@@ -39,7 +38,7 @@ export const mockLpos: Lpo[] = [
     vendorName: "Tech Supplies Ltd.",
     dateCreated: "2024-04-10",
     status: "Approved",
-    paymentStatus: "Paid", // Now this is typed correctly
+    paymentStatus: "Paid", 
     items: [
       { id: "i1", description: "Laptop Computers", quantity: 5, unitPrice: 1200, totalPrice: 6000 },
       { id: "i2", description: "Monitors", quantity: 10, unitPrice: 250, totalPrice: 2500 }
@@ -57,7 +56,7 @@ export const mockLpos: Lpo[] = [
     vendorName: "Office Solutions Inc.",
     dateCreated: "2024-04-12",
     status: "Pending",
-    paymentStatus: "Yet To Be Paid", // Now this is typed correctly
+    paymentStatus: "Unpaid", 
     items: [
       { id: "i3", description: "Office Chairs", quantity: 20, unitPrice: 150, totalPrice: 3000 },
       { id: "i4", description: "Filing Cabinets", quantity: 5, unitPrice: 200, totalPrice: 1000 }
@@ -114,9 +113,9 @@ export const mockDashboardData: DashboardData = {
   emailReportHistory: mockReports,
   paymentStatusSummary: {
     paid: mockLpos.filter(lpo => lpo.paymentStatus === "Paid").length,
-    unpaid: mockLpos.filter(lpo => lpo.paymentStatus === "Yet To Be Paid").length,
+    unpaid: mockLpos.filter(lpo => lpo.paymentStatus === "Unpaid").length,
     totalPaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Paid" ? lpo.totalAmount : 0), 0),
-    totalUnpaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Yet To Be Paid" ? lpo.totalAmount : 0), 0)
+    totalUnpaid: mockLpos.reduce((sum, lpo) => sum + (lpo.paymentStatus === "Unpaid" ? lpo.totalAmount : 0), 0)
   }
 };
 
