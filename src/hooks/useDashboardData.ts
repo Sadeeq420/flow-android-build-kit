@@ -23,6 +23,7 @@ export const useDashboardData = () => {
           .select(`
             id,
             status,
+            payment_status,
             date_created,
             total_amount,
             vendor:vendors(id, name)
@@ -97,13 +98,26 @@ export const useDashboardData = () => {
           return acc;
         }, { pending: 0, approved: 0, rejected: 0 });
 
-        // For payment status, assign default values since we don't have the column yet
-        const paymentStatusSummary = {
-          paid: 0,
-          unpaid: lposData.length,
-          totalPaid: 0,
-          totalUnpaid: lposData.reduce((sum, curr) => sum + Number(curr.total_amount), 0)
-        };
+        // For payment status, now using the payment_status column from the database
+        const paymentStatusSummary = lposData.reduce((acc: any, curr) => {
+          const isPaid = curr.payment_status === 'Paid';
+          
+          // Count by status
+          if (isPaid) {
+            acc.paid += 1;
+          } else {
+            acc.unpaid += 1;
+          }
+          
+          // Sum by amount
+          if (isPaid) {
+            acc.totalPaid += Number(curr.total_amount);
+          } else {
+            acc.totalUnpaid += Number(curr.total_amount);
+          }
+          
+          return acc;
+        }, { paid: 0, unpaid: 0, totalPaid: 0, totalUnpaid: 0 });
 
         setDashboardData({
           lpoStatusSummary,

@@ -165,6 +165,7 @@ export type Database = {
           due_date: string | null
           id: string
           lpo_number: string | null
+          payment_status: string
           status: string
           total_amount: number
           total_with_percentage: number
@@ -179,6 +180,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           lpo_number?: string | null
+          payment_status?: string
           status?: string
           total_amount?: number
           total_with_percentage?: number
@@ -193,6 +195,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           lpo_number?: string | null
+          payment_status?: string
           status?: string
           total_amount?: number
           total_with_percentage?: number
