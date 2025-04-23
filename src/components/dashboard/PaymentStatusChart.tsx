@@ -2,14 +2,22 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { formatCurrency } from '@/lib/utils';
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+const COLORS = {
+  "Paid": "#00C49F",
+  "Yet To Be Paid": "#FFBB28",
+  "Unpaid": "#FF8042"
+};
 
 interface PaymentStatusChartProps {
   data: { name: string; value: number }[];
 }
 
 export const PaymentStatusChart: React.FC<PaymentStatusChartProps> = ({ data }) => {
+  // Calculate total for percentage
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -25,16 +33,26 @@ export const PaymentStatusChart: React.FC<PaymentStatusChartProps> = ({ data }) 
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={({ name, value }) => {
+                  // Format currency for labels and show percentage
+                  const amount = formatCurrency(value);
+                  const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return `${name}: ${percent}%`;
+                }}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[entry.name as keyof typeof COLORS] || "#8884d8"} 
+                  />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                formatter={(value) => formatCurrency(value as number)}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

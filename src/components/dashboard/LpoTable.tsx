@@ -4,10 +4,12 @@ import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash } from 'lucide-react';
+import { Trash, FileText } from 'lucide-react';
 import { Lpo } from '@/types';
 import LpoStatusSelect from '@/components/LpoStatusSelect';
 import PaymentStatusSelect from '@/components/PaymentStatusSelect';
+import { pdfService } from '@/services/pdfService';
+import { toast } from 'sonner';
 
 interface LpoTableProps {
   lpos: Lpo[];
@@ -22,6 +24,17 @@ export const LpoTable: React.FC<LpoTableProps> = ({
   onPaymentStatusChange,
   onDelete,
 }) => {
+  const handleExportToPdf = async (lpo: Lpo) => {
+    try {
+      const result = await pdfService.exportLpoToDrive(lpo, "Sadiq@qumecs.com");
+      if (result) {
+        toast.success(`LPO exported to Google Drive (Sadiq@qumecs.com)`);
+      }
+    } catch (error) {
+      toast.error("Failed to export LPO to PDF");
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -60,11 +73,21 @@ export const LpoTable: React.FC<LpoTableProps> = ({
                     onStatusChange={(newStatus) => onPaymentStatusChange(lpo.id, newStatus)}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleExportToPdf(lpo)}
+                    title="Export to Google Drive"
+                    className="text-primary hover:text-primary/90"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => onDelete(lpo.id)}
+                    title="Delete LPO" 
                     className="text-destructive hover:text-destructive/90"
                   >
                     <Trash className="h-4 w-4" />
