@@ -1,4 +1,3 @@
-
 // User and Auth Types
 export type User = {
   id: string;
@@ -54,6 +53,8 @@ export type Vendor = {
 export type MonthlySpend = {
   month: string;
   amount: number;
+  date: string;
+  paidAmount: number;
 };
 
 export type VendorSpend = {

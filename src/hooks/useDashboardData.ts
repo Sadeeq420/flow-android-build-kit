@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DashboardData, MonthlySpend, VendorSpend, PaymentStatus } from '@/types';
+import { DashboardData, MonthlySpend, VendorSpend } from '@/types';
 import { toast } from 'sonner';
 
 export const useDashboardData = () => {
@@ -11,13 +10,11 @@ export const useDashboardData = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // First check if payment_status column exists
         const { data: columnsData } = await supabase
           .from('lpos')
           .select('id')
           .limit(1);
-          
-        // Then, fetch the actual data with proper error handling
+
         const { data: lposData, error: lposError } = await supabase
           .from('lpos')
           .select(`
@@ -59,20 +56,27 @@ export const useDashboardData = () => {
           return;
         }
 
-        // Calculate monthly spend from the lpos data
         const monthlySpend: MonthlySpend[] = lposData.reduce((acc: MonthlySpend[], curr) => {
           const month = new Date(curr.date_created).toLocaleString('default', { month: 'short' });
+          const isPaid = curr.payment_status === 'Paid';
           const existingMonth = acc.find(item => item.month === month);
           
           if (existingMonth) {
             existingMonth.amount += Number(curr.total_amount);
+            if (isPaid) {
+              existingMonth.paidAmount += Number(curr.total_amount);
+            }
           } else {
-            acc.push({ month, amount: Number(curr.total_amount) });
+            acc.push({
+              month,
+              amount: Number(curr.total_amount),
+              date: curr.date_created,
+              paidAmount: isPaid ? Number(curr.total_amount) : 0
+            });
           }
           return acc;
         }, []);
 
-        // Calculate vendor spend data
         const vendorSpend: VendorSpend[] = lposData.reduce((acc: VendorSpend[], curr) => {
           const vendorId = curr.vendor?.id;
           if (!vendorId) return acc;
@@ -91,25 +95,21 @@ export const useDashboardData = () => {
           return acc;
         }, []).sort((a, b) => b.totalSpend - a.totalSpend).slice(0, 5);
 
-        // Calculate LPO status summary
         const lpoStatusSummary = lposData.reduce((acc: any, curr) => {
           const status = curr.status.toLowerCase();
           acc[status] = (acc[status] || 0) + 1;
           return acc;
         }, { pending: 0, approved: 0, rejected: 0 });
 
-        // For payment status, now using the payment_status column from the database
         const paymentStatusSummary = lposData.reduce((acc: any, curr) => {
           const isPaid = curr.payment_status === 'Paid';
           
-          // Count by status
           if (isPaid) {
             acc.paid += 1;
           } else {
             acc.unpaid += 1;
           }
           
-          // Sum by amount
           if (isPaid) {
             acc.totalPaid += Number(curr.total_amount);
           } else {
