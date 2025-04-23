@@ -12,3 +12,11 @@ BEGIN
     ADD COLUMN payment_status TEXT NOT NULL DEFAULT 'Yet To Be Paid';
   END IF;
 END $$;
+
+-- Make sure we have the right indexes for performance
+CREATE INDEX IF NOT EXISTS idx_lpos_payment_status ON public.lpos(payment_status);
+CREATE INDEX IF NOT EXISTS idx_lpos_status ON public.lpos(status);
+
+-- Ensure data consistency in existing records
+UPDATE public.lpos SET payment_status = 'Yet To Be Paid' WHERE payment_status IS NULL;
+
