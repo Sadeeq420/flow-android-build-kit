@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Lpo, LpoItem, PaymentStatus } from '@/types';
 
@@ -97,11 +98,33 @@ export const lpoService = {
   },
 
   async deleteLpo(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('lpos')
-      .delete()
-      .eq('id', id);
+    try {
+      // First, delete associated LPO items
+      const { error: itemsError } = await supabase
+        .from('lpo_items')
+        .delete()
+        .eq('lpo_id', id);
 
-    if (error) throw error;
+      if (itemsError) throw itemsError;
+
+      // Then delete any associated payments
+      const { error: paymentsError } = await supabase
+        .from('lpo_payments')
+        .delete()
+        .eq('lpo_id', id);
+
+      if (paymentsError) throw paymentsError;
+
+      // Finally delete the LPO itself
+      const { error } = await supabase
+        .from('lpos')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting LPO:', error);
+      throw error;
+    }
   }
 };
