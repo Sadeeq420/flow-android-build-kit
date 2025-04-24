@@ -1,4 +1,3 @@
-
 import { User, Vendor, Lpo, Report, Reminder, DashboardData, PaymentStatus } from "./types";
 
 // Mock Users
@@ -98,10 +97,30 @@ export const mockDashboardData: DashboardData = {
     paidAmount: 8475
   },
   monthlySpend: [
-    { month: "Jan", amount: 12500 },
-    { month: "Feb", amount: 9800 },
-    { month: "Mar", amount: 15200 },
-    { month: "Apr", amount: 19600 }
+    { 
+      month: "Jan", 
+      amount: 12500, 
+      date: "2024-01-31", 
+      paidAmount: 10000 
+    },
+    { 
+      month: "Feb", 
+      amount: 9800, 
+      date: "2024-02-29", 
+      paidAmount: 7500 
+    },
+    { 
+      month: "Mar", 
+      amount: 15200, 
+      date: "2024-03-31", 
+      paidAmount: 12000 
+    },
+    { 
+      month: "Apr", 
+      amount: 19600, 
+      date: "2024-04-30", 
+      paidAmount: 15000 
+    }
   ],
   topVendors: [
     { vendorId: "v1", vendorName: "Tech Supplies Ltd.", totalSpend: 22500 },
