@@ -298,7 +298,10 @@ export type Database = {
       }
       vendors: {
         Row: {
+          account_name: string | null
+          account_number: string | null
           address: string | null
+          bank_name: string | null
           created_at: string
           email: string
           id: string
@@ -306,7 +309,10 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          account_name?: string | null
+          account_number?: string | null
           address?: string | null
+          bank_name?: string | null
           created_at?: string
           email: string
           id?: string
@@ -314,7 +320,10 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          account_name?: string | null
+          account_number?: string | null
           address?: string | null
+          bank_name?: string | null
           created_at?: string
           email?: string
           id?: string

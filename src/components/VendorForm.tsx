@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -22,6 +21,9 @@ const vendorSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
   phone: z.string().min(5, { message: "Phone number must be at least 5 characters" }),
   address: z.string().min(5, { message: "Address must be at least 5 characters" }),
+  bank_name: z.string().optional(),
+  account_number: z.string().optional(),
+  account_name: z.string().optional(),
 });
 
 type VendorFormValues = z.infer<typeof vendorSchema>;
@@ -41,6 +43,9 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
       email: "",
       phone: "",
       address: "",
+      bank_name: "",
+      account_number: "",
+      account_name: "",
     },
   });
 
@@ -53,6 +58,9 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
         email: values.email,
         phone: values.phone,
         address: values.address,
+        bank_name: values.bank_name,
+        account_number: values.account_number,
+        account_name: values.account_name,
       };
       
       const createdVendor = await vendorService.createVendor(vendor);
@@ -124,6 +132,50 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="bank_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bank Name (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter bank name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="account_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Number (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter account number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="account_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Name (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter account name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>

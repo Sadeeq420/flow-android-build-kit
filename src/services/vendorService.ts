@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Vendor } from '@/types';
 import { SupabaseVendor } from '@/types/supabase';
@@ -43,7 +42,10 @@ export const vendorService = {
         name: vendor.name,
         email: vendor.email,
         phone: vendor.phone || '',
-        address: vendor.address || ''
+        address: vendor.address || '',
+        bank_name: vendor.bank_name || '',
+        account_number: vendor.account_number || '',
+        account_name: vendor.account_name || ''
       }));
     } catch (error) {
       console.error('Error fetching vendors:', error);

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,6 +71,13 @@ export const VendorSelection = ({
                     <p><span className="font-medium">Email:</span> {vendor.email}</p>
                     <p><span className="font-medium">Phone:</span> {vendor.phone}</p>
                     <p><span className="font-medium">Address:</span> {vendor.address}</p>
+                    {vendor.bank_name && (
+                      <>
+                        <p><span className="font-medium">Bank Name:</span> {vendor.bank_name}</p>
+                        <p><span className="font-medium">Account Number:</span> {vendor.account_number}</p>
+                        <p><span className="font-medium">Account Name:</span> {vendor.account_name}</p>
+                      </>
+                    )}
                   </div>
                 ))}
             </div>
