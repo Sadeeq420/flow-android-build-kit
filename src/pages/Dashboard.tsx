@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -121,10 +120,9 @@ const Dashboard = () => {
     { name: "Rejected", value: dashboardData?.lpoStatusSummary.rejected || 0 },
   ];
 
-  // Use financial values (amounts) for payment status data instead of counts
   const paymentStatusData = [
     { name: "Paid", value: dashboardData?.paymentStatusSummary.totalPaid || 0 },
-    { name: "Yet To Be Paid", value: dashboardData?.paymentStatusSummary.totalUnpaid || 0 }
+    { name: "Unpaid", value: dashboardData?.paymentStatusSummary.totalUnpaid || 0 }
   ];
 
   return (
