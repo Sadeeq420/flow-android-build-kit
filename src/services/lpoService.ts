@@ -53,12 +53,14 @@ export const lpoService = {
         *,
         vendor:vendors(id, name),
         items:lpo_items(*)
-      `);
+      `)
+      .order('date_created', { ascending: false });
 
     if (lposError) throw lposError;
 
     return lpos.map(lpo => ({
       id: lpo.id,
+      lpoNumber: lpo.lpo_number || `LPO-${lpo.id.slice(0, 8)}`, // Fallback for existing records
       vendorId: lpo.vendor_id,
       vendorName: lpo.vendor.name,
       dateCreated: lpo.date_created,

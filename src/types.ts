@@ -1,4 +1,3 @@
-
 export type Vendor = {
   id: string;
   name: string;
@@ -37,6 +36,7 @@ export type LpoPayment = {
 
 export type Lpo = {
   id: string;
+  lpoNumber?: string; // Added lpoNumber field
   vendorId: string;
   vendorName: string;
   dateCreated: string;

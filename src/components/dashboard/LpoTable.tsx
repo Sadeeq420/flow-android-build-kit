@@ -10,6 +10,7 @@ import LpoStatusSelect from '@/components/LpoStatusSelect';
 import PaymentStatusSelect from '@/components/PaymentStatusSelect';
 import { pdfService } from '@/services/pdfService';
 import { toast } from 'sonner';
+import { format, parseISO } from 'date-fns';
 
 interface LpoTableProps {
   lpos: Lpo[];
@@ -35,6 +36,17 @@ export const LpoTable: React.FC<LpoTableProps> = ({
     }
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      const date = parseISO(dateString);
+      return format(date, 'dd/MM/yyyy HH:mm');
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -57,9 +69,9 @@ export const LpoTable: React.FC<LpoTableProps> = ({
           <TableBody>
             {lpos.map((lpo) => (
               <TableRow key={lpo.id}>
-                <TableCell className="font-medium">{lpo.id}</TableCell>
+                <TableCell className="font-medium">{lpo.lpoNumber || lpo.id}</TableCell>
                 <TableCell>{lpo.vendorName}</TableCell>
-                <TableCell>{lpo.dateCreated}</TableCell>
+                <TableCell>{formatDate(lpo.dateCreated)}</TableCell>
                 <TableCell>{formatCurrency(lpo.totalAmount)}</TableCell>
                 <TableCell>
                   <LpoStatusSelect 

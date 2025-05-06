@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { lpoService } from "@/services/lpoService";
 import { vendorService } from "@/services/vendorService";
+import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/lib/utils";
 import Header from "@/components/Header";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Check } from "lucide-react";
@@ -12,6 +14,7 @@ import { VendorSelection } from "@/components/lpo/VendorSelection";
 import { ItemsEntry } from "@/components/lpo/ItemsEntry";
 import { ReviewSubmit } from "@/components/lpo/ReviewSubmit";
 import { useVendors } from "@/hooks/useVendors";
+import { format } from 'date-fns';
 
 const LpoCreate = () => {
   const { user, logout } = useAuth();
@@ -25,6 +28,9 @@ const LpoCreate = () => {
   const [step, setStep] = useState<number>(1);
   const [paymentPercentage, setPaymentPercentage] = useState(0);
   const [notes, setNotes] = useState("");
+  
+  const [createdLpoId, setCreatedLpoId] = useState<string>("");
+  const [createdLpoNumber, setCreatedLpoNumber] = useState<string>("");
   
   const handleVendorChange = (value: string) => {
     setSelectedVendor(value);
@@ -71,7 +77,20 @@ const LpoCreate = () => {
         additionalNotes: notes,
       };
 
-      await lpoService.createLpo(lpoData);
+      const lpoId = await lpoService.createLpo(lpoData);
+      setCreatedLpoId(lpoId);
+      
+      // Get the created LPO to display its generated number
+      const { data: createdLpo } = await supabase
+        .from('lpos')
+        .select('lpo_number')
+        .eq('id', lpoId)
+        .single();
+        
+      if (createdLpo?.lpo_number) {
+        setCreatedLpoNumber(createdLpo.lpo_number);
+      }
+      
       setShowSuccessDialog(true);
       
       const statuses = ["Pending", "Approved", "Rejected"];
@@ -185,8 +204,8 @@ const LpoCreate = () => {
               </p>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <div className="grid grid-cols-2 gap-1 text-sm">
-                  <p><span className="font-medium">LPO ID:</span> LPO{Math.floor(Math.random() * 10000)}</p>
-                  <p><span className="font-medium">Date:</span> {new Date().toLocaleDateString()}</p>
+                  <p><span className="font-medium">LPO ID:</span> {createdLpoNumber || `LPO-${Math.floor(Math.random() * 10000)}`}</p>
+                  <p><span className="font-medium">Date:</span> {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
                   <p><span className="font-medium">Vendor:</span> {
                     vendors.find(v => v.id === selectedVendor)?.name
                   }</p>
@@ -197,7 +216,7 @@ const LpoCreate = () => {
                       ? "text-red-600" 
                       : "text-amber-600"
                   }`}>{lpoStatus}</span></p>
-                  <p><span className="font-medium">Total Amount:</span> {items.reduce((total, item) => total + item.totalPrice, 0)}</p>
+                  <p><span className="font-medium">Total Amount:</span> {formatCurrency(items.reduce((total, item) => total + item.totalPrice, 0))}</p>
                   <p><span className="font-medium">Items:</span> {items.length}</p>
                 </div>
               </div>
