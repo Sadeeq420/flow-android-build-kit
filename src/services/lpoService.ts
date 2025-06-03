@@ -13,7 +13,6 @@ export const lpoService = {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error('User not authenticated');
 
-    // Fix: Changed from array to single object and use user_id instead of created_by
     const { data: lpo, error: lpoError } = await supabase
       .from('lpos')
       .insert({
@@ -60,12 +59,11 @@ export const lpoService = {
 
     return lpos.map(lpo => ({
       id: lpo.id,
-      lpoNumber: lpo.lpo_number || `LPO-${lpo.id.slice(0, 8)}`, // Fallback for existing records
+      lpoNumber: lpo.lpo_number || this.generateShortLpoId(lpo.id, lpo.date_created),
       vendorId: lpo.vendor_id,
       vendorName: lpo.vendor.name,
       dateCreated: lpo.date_created,
       status: lpo.status,
-      // Use type assertion to handle the payment_status property
       paymentStatus: ((lpo as any).payment_status as PaymentStatus) || 'Unpaid',
       items: lpo.items.map((item: any) => ({
         id: item.id,
@@ -75,10 +73,18 @@ export const lpoService = {
         totalPrice: item.total_price,
       })),
       totalAmount: lpo.total_amount,
-      paidAmount: 0, // We'll need to calculate this from payments
-      payments: [], // We'll need to fetch this separately
+      paidAmount: 0,
+      payments: [],
       createdBy: lpo.user_id,
     }));
+  },
+
+  generateShortLpoId(id: string, dateCreated: string): string {
+    // Extract first 4 characters of UUID + month/year
+    const shortId = id.substring(0, 4).toUpperCase();
+    const date = new Date(dateCreated);
+    const monthYear = `${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getFullYear()).slice(-2)}`;
+    return `${shortId}-${monthYear}`;
   },
 
   async updateLpoStatus(id: string, status: string): Promise<void> {
@@ -101,13 +107,17 @@ export const lpoService = {
 
   async deleteLpo(id: string): Promise<void> {
     try {
+      // Use a transaction-like approach to ensure all related data is deleted
       // First, delete associated LPO items
       const { error: itemsError } = await supabase
         .from('lpo_items')
         .delete()
         .eq('lpo_id', id);
 
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        console.error('Error deleting LPO items:', itemsError);
+        throw itemsError;
+      }
 
       // Then delete any associated payments
       const { error: paymentsError } = await supabase
@@ -115,18 +125,26 @@ export const lpoService = {
         .delete()
         .eq('lpo_id', id);
 
-      if (paymentsError) throw paymentsError;
+      if (paymentsError) {
+        console.error('Error deleting LPO payments:', paymentsError);
+        throw paymentsError;
+      }
 
       // Finally delete the LPO itself
-      const { error } = await supabase
+      const { error: lpoError } = await supabase
         .from('lpos')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (lpoError) {
+        console.error('Error deleting LPO:', lpoError);
+        throw lpoError;
+      }
+
+      console.log('LPO deleted successfully:', id);
     } catch (error) {
-      console.error('Error deleting LPO:', error);
-      throw error;
+      console.error('Error in deleteLpo function:', error);
+      throw new Error('Failed to delete LPO. Please try again.');
     }
   }
 };

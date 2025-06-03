@@ -36,6 +36,18 @@ export const LpoTable: React.FC<LpoTableProps> = ({
     }
   };
 
+  const handleDelete = async (lpoId: string, lpoNumber: string) => {
+    if (window.confirm(`Are you sure you want to delete LPO ${lpoNumber}? This action cannot be undone.`)) {
+      try {
+        await onDelete(lpoId);
+        toast.success(`LPO ${lpoNumber} deleted successfully`);
+      } catch (error) {
+        console.error('Delete error:', error);
+        toast.error('Failed to delete LPO');
+      }
+    }
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     try {
@@ -69,7 +81,9 @@ export const LpoTable: React.FC<LpoTableProps> = ({
           <TableBody>
             {lpos.map((lpo) => (
               <TableRow key={lpo.id}>
-                <TableCell className="font-medium">{lpo.lpoNumber || lpo.id}</TableCell>
+                <TableCell className="font-medium font-mono text-sm">
+                  {lpo.lpoNumber}
+                </TableCell>
                 <TableCell>{lpo.vendorName}</TableCell>
                 <TableCell>{formatDate(lpo.dateCreated)}</TableCell>
                 <TableCell>{formatCurrency(lpo.totalAmount)}</TableCell>
@@ -98,7 +112,7 @@ export const LpoTable: React.FC<LpoTableProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(lpo.id)}
+                    onClick={() => handleDelete(lpo.id, lpo.lpoNumber || lpo.id)}
                     title="Delete LPO" 
                     className="text-destructive hover:text-destructive/90"
                   >

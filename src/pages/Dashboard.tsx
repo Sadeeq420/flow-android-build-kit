@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -94,12 +95,13 @@ const Dashboard = () => {
 
   const handleDeleteLpo = async (lpoId: string) => {
     try {
+      console.log('Attempting to delete LPO:', lpoId);
       await lpoService.deleteLpo(lpoId);
-      setLpos(lpos.filter(lpo => lpo.id !== lpoId));
+      setLpos(prevLpos => prevLpos.filter(lpo => lpo.id !== lpoId));
       toast.success('LPO deleted successfully');
     } catch (error) {
       console.error('Error deleting LPO:', error);
-      toast.error('Failed to delete LPO');
+      toast.error('Failed to delete LPO. Please try again.');
     }
   };
 

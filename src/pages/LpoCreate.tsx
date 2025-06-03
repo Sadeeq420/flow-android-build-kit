@@ -80,16 +80,9 @@ const LpoCreate = () => {
       const lpoId = await lpoService.createLpo(lpoData);
       setCreatedLpoId(lpoId);
       
-      // Get the created LPO to display its generated number
-      const { data: createdLpo } = await supabase
-        .from('lpos')
-        .select('lpo_number')
-        .eq('id', lpoId)
-        .single();
-        
-      if (createdLpo?.lpo_number) {
-        setCreatedLpoNumber(createdLpo.lpo_number);
-      }
+      // Generate the short LPO number for display
+      const shortLpoNumber = lpoService.generateShortLpoId(lpoId, new Date().toISOString());
+      setCreatedLpoNumber(shortLpoNumber);
       
       setShowSuccessDialog(true);
       
@@ -204,7 +197,7 @@ const LpoCreate = () => {
               </p>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <div className="grid grid-cols-2 gap-1 text-sm">
-                  <p><span className="font-medium">LPO ID:</span> {createdLpoNumber || `LPO-${Math.floor(Math.random() * 10000)}`}</p>
+                  <p><span className="font-medium">LPO ID:</span> <span className="font-mono">{createdLpoNumber}</span></p>
                   <p><span className="font-medium">Date:</span> {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
                   <p><span className="font-medium">Vendor:</span> {
                     vendors.find(v => v.id === selectedVendor)?.name
