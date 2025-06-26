@@ -9,326 +9,371 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      cities: {
+      audit_logs: {
         Row: {
-          country_id: number | null
-          id: number
-          name: string
-        }
-        Insert: {
-          country_id?: number | null
-          id?: never
-          name: string
-        }
-        Update: {
-          country_id?: number | null
-          id?: never
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cities_country_id_fkey"
-            columns: ["country_id"]
-            isOneToOne: false
-            referencedRelation: "countries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      countries: {
-        Row: {
-          id: number
-          name: string
-        }
-        Insert: {
-          id?: never
-          name: string
-        }
-        Update: {
-          id?: never
-          name?: string
-        }
-        Relationships: []
-      }
-      instrument: {
-        Row: {
+          action: string
+          changed_fields: string[] | null
           created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
-      }
-      instruments: {
-        Row: {
-          id: number
-          name: string
-        }
-        Insert: {
-          id?: never
-          name: string
-        }
-        Update: {
-          id?: never
-          name?: string
-        }
-        Relationships: []
-      }
-      lpo_items: {
-        Row: {
-          created_at: string
-          description: string
           id: string
-          lpo_id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changed_fields?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changed_fields?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      battery_records: {
+        Row: {
+          battery_type: string
+          created_at: string
+          date_issued: string
+          id: string
+          is_active: boolean
+          make: string
+          position_number: number
+          serial_number: string
+          truck_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          battery_type: string
+          created_at?: string
+          date_issued: string
+          id?: string
+          is_active?: boolean
+          make: string
+          position_number: number
+          serial_number: string
+          truck_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          battery_type?: string
+          created_at?: string
+          date_issued?: string
+          id?: string
+          is_active?: boolean
+          make?: string
+          position_number?: number
+          serial_number?: string
+          truck_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fuel_records: {
+        Row: {
+          created_at: string
+          date: string
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id: string
+          issued_to: string
+          issuer: string
           quantity: number
-          total_price: number
-          unit_price: number
+          receipt_url: string | null
+          site: string | null
+          truck_id: string
+          updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
-          description: string
+          date: string
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
           id?: string
-          lpo_id: string
-          quantity?: number
-          total_price?: number
-          unit_price?: number
+          issued_to: string
+          issuer: string
+          quantity: number
+          receipt_url?: string | null
+          site?: string | null
+          truck_id: string
+          updated_at?: string
+          user_id: string
         }
         Update: {
           created_at?: string
-          description?: string
+          date?: string
+          fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
-          lpo_id?: string
+          issued_to?: string
+          issuer?: string
           quantity?: number
-          total_price?: number
-          unit_price?: number
+          receipt_url?: string | null
+          site?: string | null
+          truck_id?: string
+          updated_at?: string
+          user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "lpo_items_lpo_id_fkey"
-            columns: ["lpo_id"]
-            isOneToOne: false
-            referencedRelation: "lpos"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      lpo_payments: {
+      inventory_items: {
         Row: {
-          amount: number
           created_at: string
-          created_by: string
+          id: string
+          item_name: string
+          item_type: string
+          photo_url: string | null
+          stock_balance: number
+          supplier: string | null
+          threshold: number
+          unit_cost: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_name: string
+          item_type: string
+          photo_url?: string | null
+          stock_balance?: number
+          supplier?: string | null
+          threshold?: number
+          unit_cost?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_name?: string
+          item_type?: string
+          photo_url?: string | null
+          stock_balance?: number
+          supplier?: string | null
+          threshold?: number
+          unit_cost?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      inventory_transactions: {
+        Row: {
+          created_at: string
           date: string
           id: string
-          lpo_id: string
-          reference: string
+          issued_to: string | null
+          issuer: string
+          item_id: string
+          notes: string | null
+          quantity: number
+          transaction_type: string
+          user_id: string
         }
         Insert: {
-          amount?: number
           created_at?: string
-          created_by: string
-          date?: string
+          date: string
           id?: string
-          lpo_id: string
-          reference: string
+          issued_to?: string | null
+          issuer: string
+          item_id: string
+          notes?: string | null
+          quantity: number
+          transaction_type: string
+          user_id: string
         }
         Update: {
-          amount?: number
           created_at?: string
-          created_by?: string
           date?: string
           id?: string
-          lpo_id?: string
-          reference?: string
+          issued_to?: string | null
+          issuer?: string
+          item_id?: string
+          notes?: string | null
+          quantity?: number
+          transaction_type?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "lpo_payments_lpo_id_fkey"
-            columns: ["lpo_id"]
+            foreignKeyName: "inventory_transactions_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
-            referencedRelation: "lpos"
+            referencedRelation: "inventory_items"
             referencedColumns: ["id"]
           },
         ]
       }
-      lpos: {
+      maintenance_records: {
         Row: {
-          additional_notes: string | null
-          additional_percentage: number
+          cost: number | null
           created_at: string
-          date_created: string
-          due_date: string | null
+          daily_maintenance: boolean | null
+          description: string | null
+          document_urls: string[] | null
+          greasing_done: boolean | null
           id: string
-          lpo_number: string | null
-          payment_status: string
-          status: string
-          total_amount: number
-          total_with_percentage: number
+          mileage: number
+          next_service_due: number | null
+          service_date: string
+          service_type: string | null
+          truck_id: string
+          updated_at: string
           user_id: string
-          vendor_id: string
+          washing_done: boolean | null
         }
         Insert: {
-          additional_notes?: string | null
-          additional_percentage?: number
+          cost?: number | null
           created_at?: string
-          date_created?: string
-          due_date?: string | null
+          daily_maintenance?: boolean | null
+          description?: string | null
+          document_urls?: string[] | null
+          greasing_done?: boolean | null
           id?: string
-          lpo_number?: string | null
-          payment_status?: string
-          status?: string
-          total_amount?: number
-          total_with_percentage?: number
+          mileage: number
+          next_service_due?: number | null
+          service_date: string
+          service_type?: string | null
+          truck_id: string
+          updated_at?: string
           user_id: string
-          vendor_id: string
+          washing_done?: boolean | null
         }
         Update: {
-          additional_notes?: string | null
-          additional_percentage?: number
+          cost?: number | null
           created_at?: string
-          date_created?: string
-          due_date?: string | null
+          daily_maintenance?: boolean | null
+          description?: string | null
+          document_urls?: string[] | null
+          greasing_done?: boolean | null
           id?: string
-          lpo_number?: string | null
-          payment_status?: string
-          status?: string
-          total_amount?: number
-          total_with_percentage?: number
+          mileage?: number
+          next_service_due?: number | null
+          service_date?: string
+          service_type?: string | null
+          truck_id?: string
+          updated_at?: string
           user_id?: string
-          vendor_id?: string
+          washing_done?: boolean | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "lpos_vendor_id_fkey"
-            columns: ["vendor_id"]
-            isOneToOne: false
-            referencedRelation: "vendors"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
-          email: string
+          email: string | null
+          full_name: string | null
           id: string
-          name: string
-          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
-          email: string
+          email?: string | null
+          full_name?: string | null
           id: string
-          name: string
-          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
+          full_name?: string | null
           id?: string
-          name?: string
-          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
         }
         Relationships: []
       }
-      reminders: {
+      tire_records: {
         Row: {
           created_at: string
-          date: string
+          date_issued: string
           id: string
-          notes: string | null
-          time: string
-          title: string
+          is_active: boolean
+          make: string
+          position_number: number
+          serial_number: string
+          tire_type: string
+          truck_id: string
+          updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          date: string
+          date_issued: string
           id?: string
-          notes?: string | null
-          time: string
-          title: string
+          is_active?: boolean
+          make: string
+          position_number: number
+          serial_number: string
+          tire_type: string
+          truck_id: string
+          updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          date?: string
+          date_issued?: string
           id?: string
-          notes?: string | null
-          time?: string
-          title?: string
+          is_active?: boolean
+          make?: string
+          position_number?: number
+          serial_number?: string
+          tire_type?: string
+          truck_id?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      reports: {
+      user_roles: {
         Row: {
           created_at: string
-          created_by: string
-          date_sent: string
           id: string
-          recipients: string[]
-          title: string
-          type: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
-          created_by: string
-          date_sent?: string
           id?: string
-          recipients: string[]
-          title: string
-          type: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
         }
         Update: {
           created_at?: string
-          created_by?: string
-          date_sent?: string
           id?: string
-          recipients?: string[]
-          title?: string
-          type?: string
-        }
-        Relationships: []
-      }
-      vendors: {
-        Row: {
-          account_name: string | null
-          account_number: string | null
-          address: string | null
-          bank_name: string | null
-          created_at: string
-          email: string
-          id: string
-          name: string
-          phone: string | null
-        }
-        Insert: {
-          account_name?: string | null
-          account_number?: string | null
-          address?: string | null
-          bank_name?: string | null
-          created_at?: string
-          email: string
-          id?: string
-          name: string
-          phone?: string | null
-        }
-        Update: {
-          account_name?: string | null
-          account_number?: string | null
-          address?: string | null
-          bank_name?: string | null
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string
-          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -337,10 +382,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_system_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      user_role: "Manager" | "Procurement Officer" | "Finance" | "User"
+      app_role: "admin" | "supervisor" | "user"
+      fuel_type: "petrol" | "diesel"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -456,7 +512,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      user_role: ["Manager", "Procurement Officer", "Finance", "User"],
+      app_role: ["admin", "supervisor", "user"],
+      fuel_type: ["petrol", "diesel"],
     },
   },
 } as const
