@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          password_hash: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          password_hash: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          password_hash?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -308,9 +332,11 @@ export type Database = {
           additional_notes: string | null
           additional_percentage: number | null
           date_created: string
+          due_date: string | null
           id: string
           lpo_number: string | null
           payment_status: string
+          serial_number: string | null
           status: string
           total_amount: number
           updated_at: string
@@ -321,9 +347,11 @@ export type Database = {
           additional_notes?: string | null
           additional_percentage?: number | null
           date_created?: string
+          due_date?: string | null
           id?: string
           lpo_number?: string | null
           payment_status?: string
+          serial_number?: string | null
           status?: string
           total_amount?: number
           updated_at?: string
@@ -334,9 +362,11 @@ export type Database = {
           additional_notes?: string | null
           additional_percentage?: number | null
           date_created?: string
+          due_date?: string | null
           id?: string
           lpo_number?: string | null
           payment_status?: string
+          serial_number?: string | null
           status?: string
           total_amount?: number
           updated_at?: string

@@ -9,6 +9,7 @@ export const lpoService = {
     totalAmount: number;
     additionalPercentage: number;
     additionalNotes?: string;
+    dueDate?: string;
   }): Promise<string> {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error('User not authenticated');
@@ -20,6 +21,7 @@ export const lpoService = {
         total_amount: lpoData.totalAmount,
         additional_percentage: lpoData.additionalPercentage,
         additional_notes: lpoData.additionalNotes,
+        due_date: lpoData.dueDate,
         user_id: user.user.id
       })
       .select()
@@ -59,7 +61,7 @@ export const lpoService = {
 
     return lpos.map(lpo => ({
       id: lpo.id,
-      lpoNumber: lpo.lpo_number || this.generateShortLpoId(lpo.id, lpo.date_created),
+      lpoNumber: lpo.serial_number || lpo.lpo_number || this.generateShortLpoId(lpo.id, lpo.date_created),
       vendorId: lpo.vendor_id,
       vendorName: lpo.vendor.name,
       dateCreated: lpo.date_created,

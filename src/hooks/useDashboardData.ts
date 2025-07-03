@@ -19,6 +19,8 @@ export const useDashboardData = () => {
           payment_status,
           date_created,
           total_amount,
+          due_date,
+          serial_number,
           vendor:vendors(id, name)
         `);
 

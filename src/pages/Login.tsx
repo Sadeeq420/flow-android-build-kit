@@ -4,20 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('login');
   
-  const { login, signup } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,20 +24,16 @@ const Login = () => {
     setError('');
     
     try {
-      let success;
+      const success = await login(email, password);
       
-      if (activeTab === 'login') {
-        success = await login(email, password);
-      } else {
-        success = await signup(email, password);
-      }
-      
-      if (success && activeTab === 'login') {
+      if (success) {
         navigate('/');
+      } else {
+        setError('Invalid email or password, or you are not authorized to access this system.');
       }
     } catch (err) {
-      console.error('Auth error:', err);
-      setError('An error occurred. Please try again.');
+      console.error('Login error:', err);
+      setError('An error occurred during login. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -50,105 +44,53 @@ const Login = () => {
       <div className="w-full max-w-md p-4 space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Qumecs Procurement App</h1>
-          <p className="text-gray-600 mt-2">Manage your procurement processes</p>
+          <p className="text-gray-600 mt-2">Admin Access Only</p>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle>Authentication</CardTitle>
-            <CardDescription>Enter your credentials to continue</CardDescription>
+            <CardTitle>Admin Login</CardTitle>
+            <CardDescription>Enter your admin credentials to access the system</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-              <TabsContent value="login">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input 
-                      id="login-email" 
-                      type="email" 
-                      placeholder="you@example.com" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input 
-                      id="login-password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit"
-                    className="w-full mt-4" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Processing...' : 'Login'}
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="signup">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input 
-                      id="signup-email" 
-                      type="email" 
-                      placeholder="you@example.com" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input 
-                      id="signup-password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={6}
-                    />
-                    <p className="text-xs text-muted-foreground">Password must be at least 6 characters long.</p>
-                  </div>
-                  <Button 
-                    type="submit"
-                    className="w-full mt-4" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Processing...' : 'Sign Up'}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="admin@qumecs.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="••••••••" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <Button 
+                type="submit"
+                className="w-full" 
+                disabled={isLoading}
+              >
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

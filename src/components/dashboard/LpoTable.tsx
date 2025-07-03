@@ -27,9 +27,9 @@ export const LpoTable: React.FC<LpoTableProps> = ({
 }) => {
   const handleExportToPdf = async (lpo: Lpo) => {
     try {
-      const result = await pdfService.exportLpoToDrive(lpo, "Sadiq@qumecs.com");
+      const result = await pdfService.exportLpoToDrive(lpo, "admin@qumecs.com");
       if (result) {
-        toast.success(`LPO exported to Google Drive (Sadiq@qumecs.com)`);
+        toast.success(`LPO exported to Google Drive (admin@qumecs.com)`);
       }
     } catch (error) {
       toast.error("Failed to export LPO to PDF");
@@ -69,7 +69,7 @@ export const LpoTable: React.FC<LpoTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>LPO ID</TableHead>
+              <TableHead>Serial Number</TableHead>
               <TableHead>Vendor</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Amount</TableHead>
