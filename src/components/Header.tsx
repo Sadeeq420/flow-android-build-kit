@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 type HeaderProps = {
-  user?: { name: string; role: string } | null;
+  user?: { email?: string } | null;
   onLogout?: () => void;
 };
 
@@ -48,11 +48,9 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
               <nav className="flex flex-col gap-4 mt-8">
                 {user ? (
                   <>
-                    <div className="text-sm text-muted-foreground mb-4">
-                      Logged in as <span className="font-semibold">{user.name}</span>
-                      <br />
-                      <span className="text-xs">{user.role}</span>
-                    </div>
+                     <div className="text-sm text-muted-foreground mb-4">
+                       Logged in as <span className="font-semibold">{user.email || 'Admin'}</span>
+                     </div>
                     <Link
                       to="/"
                       className="px-3 py-2 text-base hover:bg-gray-100 rounded-md"
@@ -129,14 +127,14 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <User size={16} />
-                  {user.name}
+                  {user.email || 'Admin'}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-sm text-muted-foreground">
-                  Role: {user.role}
+                  {user.email || 'Admin'}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">

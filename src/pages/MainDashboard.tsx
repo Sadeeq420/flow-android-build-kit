@@ -42,7 +42,7 @@ const MainDashboard = () => {
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold">Welcome, {user?.name}</h1>
+          <h1 className="text-3xl font-bold">Welcome, {user?.email || 'Admin'}</h1>
           <p className="text-gray-600 mt-2">Select an action to continue</p>
         </div>
 
