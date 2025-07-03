@@ -51,16 +51,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        // Verify user is an admin
+        // Check if user is in admin_users table
         const { data: adminUser, error: adminError } = await supabase
           .from('admin_users')
           .select('*')
           .eq('email', email)
           .single();
 
-        if (adminError || !adminUser) {
+        // Allow access if user is admin OR has @qumecs.com email
+        const isAdmin = !adminError && adminUser;
+        const isQumecsEmail = email.endsWith('@qumecs.com');
+
+        if (!isAdmin && !isQumecsEmail) {
           await supabase.auth.signOut();
-          console.error('User is not an admin');
+          console.error('User is not authorized to access this system');
           return false;
         }
 
