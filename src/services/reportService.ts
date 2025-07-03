@@ -1,48 +1,35 @@
 
-import { supabase } from '@/integrations/supabase/client';
 import { Report } from '@/types';
 
 export const reportService = {
   async createReport(report: Omit<Report, 'id'>): Promise<Report> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('reports')
-      .insert([{
-        title: report.title,
-        type: report.type,
-        recipients: report.recipients,
-        created_by: user.user.id,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-
+    // Mock implementation - return the report with a generated ID
     return {
-      id: data.id,
-      title: data.title,
-      type: data.type,
-      dateSent: data.date_sent,
-      recipients: data.recipients,
+      id: `report-${Date.now()}`,
+      title: report.title,
+      type: report.type,
+      dateSent: new Date().toISOString(),
+      recipients: report.recipients,
     };
   },
 
   async getReports(): Promise<Report[]> {
-    const { data, error } = await supabase
-      .from('reports')
-      .select('*')
-      .order('date_sent', { ascending: false });
-
-    if (error) throw error;
-
-    return data.map(report => ({
-      id: report.id,
-      title: report.title,
-      type: report.type,
-      dateSent: report.date_sent,
-      recipients: report.recipients,
-    }));
+    // Return mock data since reports table doesn't exist yet
+    return [
+      {
+        id: '1',
+        title: 'Monthly LPO Report',
+        type: 'Monthly',
+        dateSent: new Date().toISOString(),
+        recipients: ['admin@example.com']
+      },
+      {
+        id: '2',
+        title: 'Vendor Payment Summary',
+        type: 'Weekly',
+        dateSent: new Date().toISOString(),
+        recipients: ['finance@example.com']
+      }
+    ];
   }
 };

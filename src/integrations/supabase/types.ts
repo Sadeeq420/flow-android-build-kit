@@ -230,6 +230,129 @@ export type Database = {
           },
         ]
       }
+      lpo_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          lpo_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          lpo_id: string
+          quantity?: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          lpo_id?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lpo_items_lpo_id_fkey"
+            columns: ["lpo_id"]
+            isOneToOne: false
+            referencedRelation: "lpos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lpo_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          lpo_id: string
+          reference: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date: string
+          id?: string
+          lpo_id: string
+          reference: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          lpo_id?: string
+          reference?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lpo_payments_lpo_id_fkey"
+            columns: ["lpo_id"]
+            isOneToOne: false
+            referencedRelation: "lpos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lpos: {
+        Row: {
+          additional_notes: string | null
+          additional_percentage: number | null
+          date_created: string
+          id: string
+          lpo_number: string | null
+          payment_status: string
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+          vendor_id: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          additional_percentage?: number | null
+          date_created?: string
+          id?: string
+          lpo_number?: string | null
+          payment_status?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id: string
+          vendor_id: string
+        }
+        Update: {
+          additional_notes?: string | null
+          additional_percentage?: number | null
+          date_created?: string
+          id?: string
+          lpo_number?: string | null
+          payment_status?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lpos_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_records: {
         Row: {
           cost: number | null
@@ -374,6 +497,45 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          account_name: string | null
+          account_number: string | null
+          address: string | null
+          bank_name: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          address?: string | null
+          bank_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string | null
+          address?: string | null
+          bank_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
