@@ -37,30 +37,39 @@ const MainDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background-muted to-background-subtle flex flex-col">
       <Header user={user} onLogout={logout} />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold">Welcome, {user?.email || 'Admin'}</h1>
-          <p className="text-gray-600 mt-2">Select an action to continue</p>
+      <main className="flex-1 container mx-auto px-6 py-12">
+        <div className="text-center mb-16 animate-in">
+          <h1 className="text-4xl font-bold gradient-text mb-4">Welcome, {user?.email || 'Admin'}</h1>
+          <p className="text-foreground-muted text-lg">Select an action to continue with your procurement tasks</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {options.map((option) => (
-            <Card key={option.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-col items-center pb-2">
-                {option.icon}
-                <CardTitle className="text-xl">{option.title}</CardTitle>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {options.map((option, index) => (
+            <Card 
+              key={option.id} 
+              className="hover-lift glass-card border-card-border/50 backdrop-blur-sm group"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <CardHeader className="flex flex-col items-center pb-4 pt-8">
+                <div className="mb-4 p-4 rounded-2xl bg-primary-muted group-hover:bg-primary-subtle transition-colors duration-300">
+                  {option.icon}
+                </div>
+                <CardTitle className="text-xl font-semibold text-center">{option.title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center text-base">
+              <CardContent className="px-6">
+                <CardDescription className="text-center text-base text-foreground-muted leading-relaxed">
                   {option.description}
                 </CardDescription>
               </CardContent>
-              <CardFooter className="flex justify-center pt-0">
-                <Button onClick={option.action} variant="outline">
-                  Select
+              <CardFooter className="flex justify-center pt-2 pb-8">
+                <Button 
+                  onClick={option.action} 
+                  className="silky-button bg-gradient-to-r from-primary to-primary-hover text-primary-foreground px-8 py-2.5"
+                >
+                  Get Started
                 </Button>
               </CardFooter>
             </Card>

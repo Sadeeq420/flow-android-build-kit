@@ -28,10 +28,10 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+    <header className="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-30 shadow-sm">
+      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <Link to="/" className="text-2xl font-bold text-primary">
+          <Link to="/" className="text-2xl font-bold gradient-text hover:scale-105 transition-transform duration-200">
             Qumecs Procurement
           </Link>
         </div>
@@ -40,7 +40,7 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover-lift">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -125,7 +125,7 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2 hover-lift border-primary/20 hover:border-primary/40">
                   <User size={16} />
                   {user.email || 'Admin'}
                 </Button>
@@ -144,7 +144,7 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" size="sm" onClick={() => navigate('/login')}>
+            <Button variant="default" size="sm" onClick={() => navigate('/login')} className="silky-button bg-gradient-to-r from-primary to-primary-hover">
               Login
             </Button>
           )}
