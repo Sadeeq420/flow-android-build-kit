@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 
 const vendorSchema = z.object({
-  name: z.string().min(2, { message: "Vendor name must be at least 2 characters" }),
+  name: z.string().min(2, { message: "Supplier name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email" }),
   phone: z.string().min(5, { message: "Phone number must be at least 5 characters" }),
   address: z.string().min(5, { message: "Address must be at least 5 characters" }),
@@ -65,10 +65,10 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
       
       const createdVendor = await vendorService.createVendor(vendor);
       onSubmit(createdVendor);
-      toast.success("Vendor created successfully");
+      toast.success("Supplier created successfully");
     } catch (error) {
-      console.error("Error creating vendor:", error);
-      toast.error("Failed to create vendor. Please try again.");
+      console.error("Error creating supplier:", error);
+      toast.error("Failed to create supplier. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -82,9 +82,9 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vendor Name</FormLabel>
+              <FormLabel>Supplier Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter vendor name" {...field} />
+                <Input placeholder="Enter supplier name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +98,7 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="vendor@example.com" {...field} />
+                <Input type="email" placeholder="supplier@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -182,7 +182,7 @@ export function VendorForm({ onSubmit, onCancel }: VendorFormProps) {
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Vendor"}
+            {isSubmitting ? "Creating..." : "Create Supplier"}
           </Button>
         </div>
       </form>

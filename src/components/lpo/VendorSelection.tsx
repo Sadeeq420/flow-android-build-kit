@@ -25,21 +25,21 @@ export const VendorSelection = ({
   return <Card>
       <CardHeader>
         <CardTitle>Select Supplier</CardTitle>
-        <CardDescription>Choose a vendor from the list or create a new one</CardDescription>
+        <CardDescription>Choose a supplier from the list or create a new one</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="vendor">Vendor</Label>
+              <Label htmlFor="vendor">Supplier</Label>
               <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => setShowNewVendorDialog(true)}>
                 <UserPlus className="h-4 w-4" />
-                <span>Add Vendor</span>
+                <span>Add Supplier</span>
               </Button>
             </div>
             <Select value={selectedVendor} onValueChange={onVendorChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a vendor" />
+                <SelectValue placeholder="Select a supplier" />
               </SelectTrigger>
               <SelectContent>
                 {vendors.map(vendor => <SelectItem key={vendor.id} value={vendor.id}>
@@ -50,7 +50,7 @@ export const VendorSelection = ({
           </div>
           
           {selectedVendor && <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium mb-2">Vendor Details</h3>
+              <h3 className="font-medium mb-2">Supplier Details</h3>
               {vendors.filter(vendor => vendor.id === selectedVendor).map(vendor => <div key={vendor.id} className="space-y-1 text-sm">
                     <p><span className="font-medium">Name:</span> {vendor.name}</p>
                     <p><span className="font-medium">Email:</span> {vendor.email}</p>
@@ -74,9 +74,9 @@ export const VendorSelection = ({
       <Dialog open={showNewVendorDialog} onOpenChange={setShowNewVendorDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add New Vendor</DialogTitle>
+            <DialogTitle>Add New Supplier</DialogTitle>
             <DialogDescription>
-              Enter the details for the new vendor below.
+              Enter the details for the new supplier below.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
