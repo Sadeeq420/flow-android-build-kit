@@ -7,7 +7,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Calendar, DollarSign, FileText, TrendingUp, Clock } from "lucide-react";
+import { MessageSquare, Calendar, FileText, TrendingUp, Clock } from "lucide-react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Lpo, Vendor, PaymentStatus } from "@/types";
@@ -295,7 +295,7 @@ const Dashboard = () => {
                   {/* Financial Summary */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 rounded-lg bg-primary-muted">
-                      <DollarSign className="h-5 w-5 mx-auto mb-1 text-primary" />
+                      <span className="text-lg font-bold mx-auto mb-1 text-primary">₦</span>
                       <p className="text-xs text-foreground-muted mb-1">Total Amount</p>
                       <p className="font-semibold text-sm">{formatCurrency(supplier.totalAmount)}</p>
                     </div>
