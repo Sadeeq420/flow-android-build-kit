@@ -32,7 +32,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Check, Mail, Calendar, Clock } from "lucide-react";
+import { Check, Mail, Calendar, Clock, Download } from "lucide-react";
+import { toast } from "sonner";
 
 const EmailReport = () => {
   const { user, logout } = useAuth();
@@ -65,6 +66,31 @@ const EmailReport = () => {
     setSuccessMessage("Your report has been sent successfully.");
     setSuccessAction("email");
     setSuccessDialogOpen(true);
+  };
+
+  // Handle PDF download
+  const handleDownloadPdf = () => {
+    // Mock PDF generation and download
+    const reportData = {
+      type: emailFormData.reportType,
+      generatedAt: new Date().toISOString(),
+      content: "Procurement Report Content"
+    };
+    
+    // Create a blob with PDF-like content (in real app, this would be actual PDF)
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `procurement-report-${emailFormData.reportType}-${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success("Report downloaded successfully!");
   };
 
   // Handle reminder form submission
@@ -225,9 +251,14 @@ const EmailReport = () => {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex gap-3">
                 <Button onClick={handleSendEmail}>
+                  <Mail className="h-4 w-4 mr-2" />
                   Send Report Now
+                </Button>
+                <Button variant="outline" onClick={handleDownloadPdf}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download PDF
                 </Button>
               </CardFooter>
             </Card>

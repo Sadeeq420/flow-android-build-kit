@@ -14,6 +14,7 @@ import { Lpo, Vendor, PaymentStatus } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
+import { pdfService } from "@/services/pdfService";
 
 interface SupplierData {
   vendor: Vendor;
@@ -193,6 +194,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleLpoClick = async (lpo: Lpo) => {
+    try {
+      const result = await pdfService.exportLpoToDrive(lpo, "admin@qumecs.com");
+      if (result) {
+        toast.success(`LPO PDF generated and opened`);
+      }
+    } catch (error) {
+      toast.error("Failed to generate LPO PDF");
+    }
+  };
+
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'dd/MM/yyyy');
@@ -315,7 +327,11 @@ const Dashboard = () => {
                     </h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {supplier.lpos.slice(0, 5).map((lpo) => (
-                        <div key={lpo.id} className="p-3 rounded-lg bg-background-muted/50 border border-card-border/30">
+                        <div 
+                          key={lpo.id} 
+                          className="p-3 rounded-lg bg-background-muted/50 border border-card-border/30 cursor-pointer hover:bg-background-muted/70 transition-colors"
+                          onClick={() => handleLpoClick(lpo)}
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-mono text-xs font-medium text-primary">
                               {lpo.lpoNumber}
