@@ -58,31 +58,228 @@ export const pdfService = {
 <head>
     <title>LPO-${lpo.lpoNumber}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-size: 24px; font-weight: bold; color: #4A90E2; }
-        .company-details { text-align: right; font-size: 10px; }
-        .title { text-align: center; margin: 20px 0; }
-        .lpo-details { display: flex; justify-content: space-between; margin: 20px 0; }
-        .vendor-details, .lpo-info { width: 48%; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-        th { background-color: #f0f0f0; font-weight: bold; }
-        .terms { margin-top: 20px; font-size: 10px; }
-        .signature-section { margin-top: 40px; display: flex; justify-content: space-between; }
-        .total-row { font-weight: bold; background-color: #f9f9f9; }
-        @media print { body { margin: 0; } }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            font-size: 12px; 
+            line-height: 1.4;
+            color: #333;
+        }
+        .header-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px 30px;
+            margin: -20px -20px 30px -20px;
+            border-bottom: 3px solid #6c757d;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 100%;
+        }
+        .logo-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .logo-design {
+            position: relative;
+            margin-right: 15px;
+        }
+        .logo-curve {
+            width: 60px;
+            height: 40px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 50px 50px 0 50px;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            z-index: 1;
+        }
+        .logo-text {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 28px;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .logo-subtitle {
+            font-size: 11px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 5px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .middle-address {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: #495057;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        .company-details {
+            flex: 1;
+            text-align: right;
+            font-size: 11px;
+            color: #495057;
+            line-height: 1.6;
+        }
+        .company-details strong {
+            color: #2c3e50;
+            font-size: 12px;
+        }
+        .title { 
+            text-align: center; 
+            margin: 30px 0; 
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .lpo-details { 
+            display: flex; 
+            justify-content: space-between; 
+            margin: 25px 0;
+            gap: 30px;
+        }
+        .vendor-details, .lpo-info { 
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .vendor-details h4, .lpo-info h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th { 
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { 
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            background: white;
+        }
+        tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+        .total-row { 
+            font-weight: bold; 
+            background: linear-gradient(135deg, #e8f4f8, #d1ecf1) !important;
+            color: #2c3e50;
+        }
+        .total-row td {
+            background: linear-gradient(135deg, #e8f4f8, #d1ecf1) !important;
+            font-size: 13px;
+        }
+        .terms { 
+            margin-top: 30px; 
+            font-size: 10px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        .terms strong {
+            color: #2c3e50;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .signature-section { 
+            margin-top: 50px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .signature-left {
+            flex: 1;
+            font-size: 11px;
+            color: #6c757d;
+        }
+        .signature-right {
+            flex: 1;
+            text-align: right;
+        }
+        .signature-box {
+            border: 2px solid #dee2e6;
+            padding: 40px 20px 20px 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .footer-address {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 10px;
+            color: #6c757d;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        @media print { 
+            body { margin: 0; padding: 15px; }
+            .header-container { margin: -15px -15px 20px -15px; }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">QUMECS</div>
-        <div class="company-details">
-            Registered Address:<br>
-            6A Gwani Muktar<br>
-            Maiduguri, Borno State<br>
-            Nigeria<br>
-            www.qumecs.com
+    <div class="header-container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo-design">
+                    <div class="logo-curve"></div>
+                    <div class="logo-text">QUMECS</div>
+                </div>
+                <div class="logo-subtitle">NIGERIA LIMITED</div>
+            </div>
+            <div class="middle-address">
+                <strong>Operation Address:</strong><br>
+                2, Avenue Road,<br>
+                Light Industry Area,<br>
+                Western By-Pass, Kaduna.
+            </div>
+            <div class="company-details">
+                <strong>Registered Address:</strong><br>
+                5A Gwani Muktar,<br>
+                Malali GRA, Kaduna.<br>
+                <strong>Tel:</strong> 062-835944<br>
+                <strong>Email:</strong> info@qumecs.com<br>
+                <strong>Web:</strong> www.qumecs.com
+            </div>
         </div>
     </div>
     
